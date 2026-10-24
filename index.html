@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cybernetic Matrix Vault</title>
+    <title>Cybernetic Matrix Vault v2</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -51,11 +50,12 @@
         .dossier-h { font-family: 'Cormorant Garamond', serif; font-size: 19px; color: var(--gold-light); margin: 0 0 6px 0; font-weight: 700; text-transform: uppercase; }
         .vault-item { background: var(--card-alt); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
         .vault-item:hover { border-color: var(--gold); }
+        #status-log { font-size: 11px; color: #ff6b6b; margin-top: 8px; display: none; word-break: break-all; background: #221515; padding: 8px; border-radius: 6px; }
     </style>
 </head>
 <body>
     <div class="header">
-        <div class="tag">Cybernetic Matrix</div>
+        <div class="tag">Cybernetic Matrix • v2.0</div>
         <h1>Архитектура Личности</h1>
     </div>
 
@@ -64,6 +64,9 @@
         <div class="tab-btn" id="tab-compat" onclick="switchTab('compat')">💞 Пара</div>
         <div class="tab-btn" id="tab-vault" onclick="switchTab('vault')">🗄 Мой Сейф</div>
     </div>
+
+    <!-- Блок вывода ошибок прямо на экран без всплывающих окон GitHub -->
+    <div id="status-log"></div>
 
     <div id="view-scan">
         <div class="card">
@@ -119,26 +122,33 @@
     </div>
 
     <script>
-        console.log("Скрипт успешно загружен.");
-
         const tg = window.Telegram.WebApp;
         try { tg.expand(); } catch(e) {}
         const urlParams = new URLSearchParams(window.location.search);
         const userId = tg.initDataUnsafe?.user?.id || urlParams.get('uid') || 1001;
 
-        // --- ВАШИ НАСТРОЙКИ ---
         const WORKER_URL = 'https://embracemydream.workers.dev';
 
+        function showError(msg) {
+            const el = document.getElementById('status-log');
+            el.style.display = 'block';
+            el.innerText = '⚠️ ' + msg;
+        }
+        function clearError() {
+            document.getElementById('status-log').style.display = 'none';
+        }
+
         async function apiFetch(path, options = {}) {
+            clearError();
             options.headers = options.headers || {};
             if (!options.headers['Content-Type'] && options.body) {
                 options.headers['Content-Type'] = 'application/json';
             }
-            // Отправляем обычный чистый запрос в Воркер
             return fetch(WORKER_URL + path, options);
         }
 
         function switchTab(tab) {
+            clearError();
             ['scan', 'compat', 'vault'].forEach(t => {
                 document.getElementById('view-' + t).style.display = (t === tab) ? 'block' : 'none';
                 document.getElementById('tab-' + t).classList.toggle('active', t === tab);
@@ -148,16 +158,12 @@
         }
 
         async function runPreview() {
-            console.log("Запрос отправлен...");
             const date = document.getElementById('s-date').value.trim();
             const gender = document.getElementById('s-gender').value;
-            
             try {
                 const res = await apiFetch(`/api/preview?user_id=${userId}&date=${encodeURIComponent(date)}&gender=${encodeURIComponent(gender)}`);
-                if (!res.ok) { alert('Ошибка связи с сервером.'); return; }
-                
+                if (!res.ok) { showError(`Ошибка сканирования (${res.status}): ${await res.text()}`); return; }
                 const d = await res.json();
-                console.log("Ответ получен:", d);
                 
                 document.getElementById('preview-card').style.display = 'block';
                 document.getElementById('p-title').innerText = `${d.raw_date || date} (${d.age || '—'} лет)`;
@@ -167,38 +173,34 @@
                 document.getElementById('p-itog').innerText = d.itog || '—';
                 
                 const hook = d.hook_text || "Базовый анализ завершен. Матрица готова к дешифровке.";
-                document.getElementById('p-hook').innerHTML = String(hook).replace(/\\n/g, '<br>');
+                document.getElementById('p-hook').innerHTML = String(hook).replace(/\n/g, '<br>');
 
                 const btn = document.getElementById('btn-buy-single');
                 btn.innerText = d.already_saved ? '📂 Открыть готовое Досье' : '🔓 Открыть полное Досье (0 ₽)';
-                
             } catch (e) {
-                console.error("Критическая ошибка:", e);
-                alert('Не удалось связаться с сервером.');
+                showError('Сбой сети при сканировании: ' + e.message);
             }
         }
 
-	async function unlockSingle() {
+        async function unlockSingle() {
             const btn = document.getElementById('btn-buy-single');
             const date = document.getElementById('s-date').value.trim();
             const gender = document.getElementById('s-gender').value;
-            btn.disabled = true; btn.innerText = 'Генерация досье (10-20 сек)...';
+            btn.disabled = true; btn.innerText = '⏳ Генерация досье (15-25 сек)...';
             try {
                 const res = await apiFetch(`/api/unlock_single`, {
                     method: 'POST',
                     body: JSON.stringify({user_id: Number(userId), date: date, gender: gender})
                 });
                 if (!res.ok) {
-                    const errText = await res.text();
-                    alert(`Ошибка сервера (${res.status}): ${errText}`);
+                    showError(`Сервер вернул код ${res.status}: ${await res.text()}`);
                     return;
                 }
-                const data = await res.json();
-                renderDossierView(data);
-            } catch (e) { 
-                alert('Сбой соединения: ' + e.message); 
-            } finally { 
-                btn.disabled = false; btn.innerText = '📂 Открыть готовое Досье'; 
+                renderDossierView(await res.json());
+            } catch (e) {
+                showError('Обрыв соединения (возможно, ИИ думает слишком долго): ' + e.message);
+            } finally {
+                btn.disabled = false; btn.innerText = '📂 Открыть готовое Досье';
             }
         }
 
@@ -206,64 +208,43 @@
             const btn = document.getElementById('btn-buy-compat');
             const d1 = document.getElementById('c-d1').value.trim(), g1 = document.getElementById('c-g1').value;
             const d2 = document.getElementById('c-d2').value.trim(), g2 = document.getElementById('c-g2').value;
-            btn.disabled = true; btn.innerText = 'Расчет синастрии (10-20 сек)...';
+            btn.disabled = true; btn.innerText = '⏳ Расчет синастрии (15-25 сек)...';
             try {
                 const res = await apiFetch(`/api/unlock_compat`, {
                     method: 'POST',
                     body: JSON.stringify({user_id: Number(userId), d1: d1, g1: g1, d2: d2, g2: g2})
                 });
                 if (!res.ok) {
-                    const errText = await res.text();
-                    alert(`Ошибка сервера (${res.status}): ${errText}`);
+                    showError(`Сервер вернул код ${res.status}: ${await res.text()}`);
                     return;
                 }
-                const data = await res.json();
-                renderDossierView(data);
-            } catch (e) { 
-                alert('Сбой соединения: ' + e.message); 
-            } finally { 
-                btn.disabled = false; btn.innerText = '💞 Рассчитать Синастрию'; 
-            }
-        }
-        async function unlockCompat() {
-            const btn = document.getElementById('btn-buy-compat');
-            const d1 = document.getElementById('c-d1').value.trim(), g1 = document.getElementById('c-g1').value;
-            const d2 = document.getElementById('c-d2').value.trim(), g2 = document.getElementById('c-g2').value;
-            btn.disabled = true; btn.innerText = 'Расчет синастрии (10-20 сек)...';
-            try {
-                const res = await apiFetch(`/api/unlock_compat`, {
-                    method: 'POST',
-                    body: JSON.stringify({user_id: Number(userId), d1: d1, g1: g1, d2: d2, g2: g2})
-                });
-                if (!res.ok) {
-                    const errText = await res.text();
-                    alert(`Ошибка сервера (${res.status}): ${errText}`);
-                    return;
-                }
-                const data = await res.json();
-                renderDossierView(data);
-            } catch (e) { 
-                alert('Сбой соединения: ' + e.message); 
-            } finally { 
-                btn.disabled = false; btn.innerText = '💞 Рассчитать Синастрию'; 
+                renderDossierView(await res.json());
+            } catch (e) {
+                showError('Обрыв соединения при расчете пары: ' + e.message);
+            } finally {
+                btn.disabled = false; btn.innerText = '💞 Рассчитать Синастрию';
             }
         }
 
         async function loadVault() {
-            const res = await apiFetch(`/api/vault?user_id=${userId}`);
-            const items = await res.json();
-            const box = document.getElementById('vault-list');
-            if (!items.length) { box.innerHTML = '<div class="card" style="text-align:center;color:var(--muted);">Сейф пуст.</div>'; return; }
-            box.innerHTML = items.map(r => `
-                <div class="vault-item" onclick="openSavedReport(${r.id})">
-                    <div>
-                        <div class="tag">${r.report_type === 'single' ? 'Личное досье' : 'Синастрия'} • ${r.created_at}</div>
-                        <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:#FFF;">${r.title}</div>
-                        <div style="font-size:12px;color:var(--gold-light);">${r.subtitle || ''}</div>
+            try {
+                const res = await apiFetch(`/api/vault?user_id=${userId}`);
+                const items = await res.json();
+                const box = document.getElementById('vault-list');
+                if (!items.length) { box.innerHTML = '<div class="card" style="text-align:center;color:var(--muted);">Сейф пуст.</div>'; return; }
+                box.innerHTML = items.map(r => `
+                    <div class="vault-item" onclick="openSavedReport(${r.id})">
+                        <div>
+                            <div class="tag">${r.report_type === 'single' ? 'Личное досье' : 'Синастрия'} • ${r.created_at}</div>
+                            <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:#FFF;">${r.title}</div>
+                            <div style="font-size:12px;color:var(--gold-light);">${r.subtitle || ''}</div>
+                        </div>
+                        <div style="color:var(--gold);font-size:20px;">→</div>
                     </div>
-                    <div style="color:var(--gold);font-size:20px;">→</div>
-                </div>
-            `).join('');
+                `).join('');
+            } catch (e) {
+                showError('Ошибка загрузки сейфа: ' + e.message);
+            }
         }
 
         async function openSavedReport(id) { renderDossierView(await (await apiFetch(`/api/report/${id}`)).json()); }
@@ -291,7 +272,7 @@
                         <p><b>Реализация и Итог:</b> ${d.core_realization_decoding || '—'}</p>
                         <p><b>Возраст:</b> ${d.core_age_summary || '—'}</p>
                     </div>
-                    <div class="dossier-section"><div class="dossier-h">01. Мыслит и действует</div><p>${String(d.thinking_and_action || '—').replace(/\\n/g, '<br><br>')}</p></div>
+                    <div class="dossier-section"><div class="dossier-h">01. Мыслит и действует</div><p>${String(d.thinking_and_action || '—').replace(/\n/g, '<br><br>')}</p></div>
                     <div class="dossier-section"><div class="dossier-h">02. Возрастной этап и текущая фаза</div><p>${d.age_phase_analysis || '—'}</p></div>
                     <div class="dossier-section"><div class="dossier-h">03. Поведение в отношениях</div>
                         <p><b style="color:var(--gold);">В чем нуждается (дефицит):</b> ${d.rel_needs || '—'}</p>
