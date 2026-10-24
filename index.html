@@ -128,17 +128,13 @@
 
         // --- ВАШИ НАСТРОЙКИ ---
         const WORKER_URL = 'https://embracemydream.workers.dev';
-        const TUNNEL_URL = 'https://stout-flavoring-helpline.ngrok-free.dev'; 
 
         async function apiFetch(path, options = {}) {
             options.headers = options.headers || {};
-            // Указываем Воркеру, куда проксировать запрос
-            options.headers['X-Target-Url'] = TUNNEL_URL;
-            
             if (!options.headers['Content-Type'] && options.body) {
                 options.headers['Content-Type'] = 'application/json';
             }
-            // Запрос идет ТОЛЬКО через Воркер
+            // Отправляем обычный чистый запрос в Воркер
             return fetch(WORKER_URL + path, options);
         }
 
