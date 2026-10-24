@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cybernetic Matrix Vault v2</title>
+    <title>Cybernetic Matrix Vault v4</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -31,13 +31,14 @@
         .tag { font-size: 9.5px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); font-weight: 600; }
         h1 { font-family: 'Cormorant Garamond', serif; font-size: 28px; margin: 4px 0 2px 0; font-weight: 700; color: #FFF; }
         .nav-tabs { display: flex; gap: 8px; margin-bottom: 18px; }
-        .tab-btn { flex: 1; background: var(--card); border: 1px solid var(--border); color: var(--muted); padding: 11px 6px; border-radius: 8px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; text-align: center; }
+        .tab-btn { flex: 1; background: var(--card); border: 1px solid var(--border); color: var(--muted); padding: 11px 6px; border-radius: 8px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; text-align: center; transition: all 0.2s; }
         .tab-btn.active { border-color: var(--gold); color: var(--gold-light); background: #1F1D18; }
         .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 14px; }
         label { display: block; font-size: 10.5px; text-transform: uppercase; letter-spacing: 1.3px; color: var(--muted); margin-bottom: 6px; }
         input, select { width: 100%; background: #0F1015; border: 1px solid var(--border); color: var(--text); padding: 12px 14px; border-radius: 8px; font-family: 'Montserrat', sans-serif; font-size: 14px; margin-bottom: 12px; outline: none; }
         input:focus { border-color: var(--gold); }
         .btn { width: 100%; background: linear-gradient(135deg, #C5A059 0%, #9A7632 100%); color: #0D0E12; border: none; padding: 14px; border-radius: 8px; font-weight: 600; font-size: 12.5px; text-transform: uppercase; letter-spacing: 1.4px; cursor: pointer; margin-top: 4px; }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
         .btn-outline { background: transparent; border: 1px solid var(--gold); color: var(--gold-light); margin-top: 10px; }
         .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 14px 0; }
         .metric-box { background: #101217; border: 1px solid var(--border); border-radius: 8px; padding: 10px 4px; text-align: center; }
@@ -47,15 +48,16 @@
         .locked-list { background: #111318; border: 1px dashed #3A3325; border-radius: 8px; padding: 12px 14px; margin: 12px 0; font-size: 12.5px; color: #C7C2B8; }
         .dossier-section { border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 12px; }
         .dossier-section:last-child { border-bottom: none; }
-        .dossier-h { font-family: 'Cormorant Garamond', serif; font-size: 19px; color: var(--gold-light); margin: 0 0 6px 0; font-weight: 700; text-transform: uppercase; }
+        .finance-box { background: #191712; padding: 14px; border-radius: 10px; border: 1px solid #3A3222; margin-bottom: 14px; }
+        .dossier-h { font-family: 'Cormorant Garamond', serif; font-size: 19px; color: var(--gold-light); margin: 0 0 8px 0; font-weight: 700; text-transform: uppercase; }
         .vault-item { background: var(--card-alt); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
         .vault-item:hover { border-color: var(--gold); }
-        #status-log { font-size: 11px; color: #ff6b6b; margin-top: 8px; display: none; word-break: break-all; background: #221515; padding: 8px; border-radius: 6px; }
+        #status-log { font-size: 11.5px; color: #ff8a8a; margin-bottom: 12px; display: none; word-break: break-word; background: #261515; border: 1px solid #5a2525; padding: 10px 12px; border-radius: 8px; }
     </style>
 </head>
 <body>
     <div class="header">
-        <div class="tag">Cybernetic Matrix • v2.0</div>
+        <div class="tag">Cybernetic Matrix • v4.0</div>
         <h1>Архитектура Личности</h1>
     </div>
 
@@ -65,7 +67,6 @@
         <div class="tab-btn" id="tab-vault" onclick="switchTab('vault')">🗄 Мой Сейф</div>
     </div>
 
-    <!-- Блок вывода ошибок прямо на экран без всплывающих окон GitHub -->
     <div id="status-log"></div>
 
     <div id="view-scan">
@@ -93,6 +94,7 @@
             <div class="locked-list">
                 <b style="color:var(--gold-light);">🔒 Скрыто в полном досье:</b><br>
                 • Полная дешифровка алхимии дня и гендерного фильтра<br>
+                • <b>Финансовый код:</b> методы притяжения денег и блокировки потока<br>
                 • Скрытый дефицит в отношениях и кто вам подойдет<br>
                 • Защитный панцирь в стрессе, пульт управления и Суперсила
             </div>
@@ -127,7 +129,7 @@
         const urlParams = new URLSearchParams(window.location.search);
         const userId = tg.initDataUnsafe?.user?.id || urlParams.get('uid') || 1001;
 
-        // Телефон стучится напрямую в ваш ПК через Ngrok
+        // Прямой адрес Ngrok-туннеля к локальному FastAPI
         const BACKEND_URL = 'https://stout-flavoring-helpline.ngrok-free.dev';
 
         function showError(msg) {
@@ -162,6 +164,7 @@
         async function runPreview() {
             const date = document.getElementById('s-date').value.trim();
             const gender = document.getElementById('s-gender').value;
+            if (!date) { showError('Введите дату рождения в формате ДД.ММ.ГГГГ'); return; }
             try {
                 const res = await apiFetch(`/api/preview?user_id=${userId}&date=${encodeURIComponent(date)}&gender=${encodeURIComponent(gender)}`);
                 if (!res.ok) { showError(`Ошибка сканирования (${res.status}): ${await res.text()}`); return; }
@@ -200,7 +203,7 @@
                 }
                 renderDossierView(await res.json());
             } catch (e) {
-                showError('Обрыв соединения (возможно, ИИ думает слишком долго): ' + e.message);
+                showError('Обрыв соединения: ' + e.message);
             } finally {
                 btn.disabled = false; btn.innerText = '📂 Открыть готовое Досье';
             }
@@ -210,6 +213,7 @@
             const btn = document.getElementById('btn-buy-compat');
             const d1 = document.getElementById('c-d1').value.trim(), g1 = document.getElementById('c-g1').value;
             const d2 = document.getElementById('c-d2').value.trim(), g2 = document.getElementById('c-g2').value;
+            if (!d1 || !d2) { showError('Введите обе даты рождения'); return; }
             btn.disabled = true; btn.innerText = '⏳ Расчет синастрии (15-25 сек)...';
             try {
                 const res = await apiFetch(`/api/unlock_compat`, {
@@ -249,7 +253,15 @@
             }
         }
 
-        async function openSavedReport(id) { renderDossierView(await (await apiFetch(`/api/report/${id}`)).json()); }
+        async function openSavedReport(id) {
+            try {
+                const res = await apiFetch(`/api/report/${id}`);
+                if (!res.ok) { showError(`Ошибка открытия отчета (${res.status})`); return; }
+                renderDossierView(await res.json());
+            } catch (e) {
+                showError('Сбой при открытии отчета: ' + e.message);
+            }
+        }
 
         function renderDossierView(item) {
             ['scan', 'compat', 'vault'].forEach(t => document.getElementById('view-' + t).style.display = 'none');
@@ -281,14 +293,20 @@
                         <p><b style="color:var(--gold);">Чего хочет (запрос):</b> ${d.rel_wants || '—'}</p>
                         <p><b style="color:var(--gold);">Какой партнер подойдет:</b> ${d.rel_partner || '—'}</p>
                     </div>
-                    <div class="dossier-section"><div class="dossier-h">04. Боится (Триггеры и броня)</div><p>${d.fears_and_armor || '—'}</p></div>
-                    <div class="dossier-section"><div class="dossier-h">05. Как взаимодействовать</div><p>${d.interaction_manual || '—'}</p></div>
-                    <div class="dossier-section"><div class="dossier-h">06. Вектор эволюции</div>
+                    <div class="finance-box">
+                        <div class="dossier-h">💰 04. Материальное состояние и притяжение денег</div>
+                        <p><b style="color:var(--gold-light);">Архитектура денежного канала:</b> ${d.money_channel || '—'}</p>
+                        <p><b style="color:#ff8a8a;">Финансовые утечки (что блокирует поток):</b> ${d.money_blocks || '—'}</p>
+                        <p><b style="color:#7bed9f;">Методы притяжения денег (рычаги роста):</b> ${d.money_attraction || '—'}</p>
+                    </div>
+                    <div class="dossier-section"><div class="dossier-h">05. Боится (Триггеры и броня)</div><p>${d.fears_and_armor || '—'}</p></div>
+                    <div class="dossier-section"><div class="dossier-h">06. Как взаимодействовать</div><p>${d.interaction_manual || '—'}</p></div>
+                    <div class="dossier-section"><div class="dossier-h">07. Вектор эволюции</div>
                         <p><b style="color:var(--gold);">Вектор роста:</b> ${d.growth_vector || '—'}</p>
                         <p><b style="color:var(--gold);">Что закрыть:</b> ${d.growth_drop || '—'}</p>
                         <p><b style="color:var(--gold);">Фокус внимания:</b> ${d.growth_focus || '—'}</p>
                     </div>
-                    <div class="hook-box"><div class="dossier-h">✦ 07. Квантовая Суперсила</div><div>${d.superpower || '—'}</div></div>
+                    <div class="hook-box"><div class="dossier-h">✦ 08. Квантовая Суперсила</div><div>${d.superpower || '—'}</div></div>
                 `;
             } else {
                 const p1 = item.profile.p1, p2 = item.profile.p2, d = item.report;
@@ -299,11 +317,17 @@
                     <div class="dossier-section"><div class="dossier-h">01. Архитектурная химия</div><p>${d.chemistry || '—'}</p></div>
                     <div class="dossier-section"><div class="dossier-h">02. Слепые зоны и короткие замыкания</div><p>${d.blind_spots || '—'}</p></div>
                     <div class="dossier-section"><div class="dossier-h">03. Сценарий в конфликте</div><p>${d.conflict_scenario || '—'}</p></div>
-                    <div class="dossier-section"><div class="dossier-h">04. Протокол синхронизации</div>
+                    <div class="finance-box">
+                        <div class="dossier-h">💰 04. Финансовая синергия и капитал пары</div>
+                        <p><b style="color:var(--gold-light);">Формула общего капитала (распределение ролей):</b> ${d.financial_synergy || '—'}</p>
+                        <p><b style="color:#ff8a8a;">Финансовые конфликты (где пара сливает деньги):</b> ${d.financial_leaks || '—'}</p>
+                        <p><b style="color:#7bed9f;">Рычаг притяжения больших денег в союзе:</b> ${d.wealth_multiplier || '—'}</p>
+                    </div>
+                    <div class="dossier-section"><div class="dossier-h">05. Протокол синхронизации</div>
                         <p><b style="color:var(--gold);">Для ${p1.raw_date}:</b> ${d.sync_protocol_p1 || '—'}</p>
                         <p><b style="color:var(--gold);">Для ${p2.raw_date}:</b> ${d.sync_protocol_p2 || '—'}</p>
                     </div>
-                    <div class="hook-box"><div class="dossier-h">✦ 05. Суперсила Союза</div><div>${d.union_superpower || '—'}</div></div>
+                    <div class="hook-box"><div class="dossier-h">✦ 06. Суперсила Союза</div><div>${d.union_superpower || '—'}</div></div>
                 `;
             }
             window.scrollTo(0, 0);
