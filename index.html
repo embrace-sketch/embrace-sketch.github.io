@@ -127,7 +127,8 @@
         const urlParams = new URLSearchParams(window.location.search);
         const userId = tg.initDataUnsafe?.user?.id || urlParams.get('uid') || 1001;
 
-        const WORKER_URL = 'https://embracemydream.workers.dev';
+        // Телефон стучится напрямую в ваш ПК через Ngrok
+        const BACKEND_URL = 'https://stout-flavoring-helpline.ngrok-free.dev';
 
         function showError(msg) {
             const el = document.getElementById('status-log');
@@ -141,10 +142,11 @@
         async function apiFetch(path, options = {}) {
             clearError();
             options.headers = options.headers || {};
+            options.headers['ngrok-skip-browser-warning'] = 'true';
             if (!options.headers['Content-Type'] && options.body) {
                 options.headers['Content-Type'] = 'application/json';
             }
-            return fetch(WORKER_URL + path, options);
+            return fetch(BACKEND_URL + path, options);
         }
 
         function switchTab(tab) {
