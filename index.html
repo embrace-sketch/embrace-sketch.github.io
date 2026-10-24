@@ -1,197 +1,279 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#080808">
-  <title>Сюцай — личный портрет</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <style>
-    :root {
-      color-scheme: dark;
-      --bg: #080808;
-      --panel: #121212;
-      --panel-2: #191713;
-      --gold: #e8bd62;
-      --gold-light: #ffe5a0;
-      --text: #f4f0e7;
-      --muted: #a9a39a;
-      --line: rgba(232,189,98,.22);
-      --danger: #f0a6a6;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0; min-height: 100vh;
-      background: radial-gradient(ellipse at top, #211b0e 0%, var(--bg) 48%);
-      color: var(--text);
-      font: 16px/1.45 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      padding: max(18px, env(safe-area-inset-top)) 16px max(22px, env(safe-area-inset-bottom));
-    }
-    .app { max-width: 560px; margin: 0 auto; }
-    header { padding: 18px 4px 24px; }
-    .eyebrow {
-      color: var(--gold); font-size: 11px; letter-spacing: .22em;
-      text-transform: uppercase; font-weight: 700;
-    }
-    h1 {
-      margin: 10px 0 8px; font-family: Georgia, "Times New Roman", serif;
-      font-weight: 500; font-size: clamp(32px, 8vw, 44px); line-height: 1.05;
-      color: var(--gold-light);
-    }
-    .subtitle { margin: 0; max-width: 440px; color: var(--muted); font-size: 14px; }
-    .ornament { height: 1px; margin-top: 22px; background: linear-gradient(90deg, transparent, var(--gold), transparent); }
-    .card {
-      border: 1px solid var(--line); border-radius: 20px;
-      background: linear-gradient(145deg, rgba(28,25,19,.96), rgba(15,15,15,.98));
-      padding: 20px; box-shadow: 0 18px 50px rgba(0,0,0,.2);
-    }
-    .section-title { margin: 0 0 16px; font-size: 17px; font-weight: 650; }
-    .field { margin-bottom: 16px; }
-    label { display: block; margin-bottom: 7px; color: #ded6c7; font-size: 13px; }
-    input, select {
-      width: 100%; min-height: 48px; border-radius: 12px; padding: 12px 13px;
-      border: 1px solid #3b3529; background: #0c0c0b; color: var(--text);
-      font: inherit; outline: none;
-    }
-    input:focus, select:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(232,189,98,.1); }
-    input::placeholder { color: #716c63; }
-    .hint { color: var(--muted); font-size: 12px; margin: 6px 0 0; }
-    .primary {
-      width: 100%; min-height: 52px; margin-top: 5px; border: 0; border-radius: 13px;
-      color: #171208; font: inherit; font-weight: 750; cursor: pointer;
-      background: linear-gradient(100deg, #c89b43, #ffe3a0 55%, #d6a94f);
-      box-shadow: 0 8px 24px rgba(211,166,73,.15);
-    }
-    .primary:active { transform: translateY(1px); }
-    .secondary {
-      width: 100%; min-height: 44px; margin-top: 10px; border-radius: 12px;
-      border: 1px solid var(--line); background: transparent; color: var(--gold-light);
-      font: inherit; cursor: pointer;
-    }
-    .status {
-      display: none; margin-top: 16px; padding: 13px 14px; border-radius: 12px;
-      background: #15140f; border: 1px solid var(--line); color: #e9dfc9; font-size: 13px;
-      overflow-wrap: anywhere;
-    }
-    .status.show { display: block; }
-    .status.error { border-color: rgba(240,166,166,.4); color: var(--danger); }
-    .note {
-      margin: 16px 3px 0; color: #817b71; font-size: 11px; text-align: center;
-    }
-    footer { padding: 20px 8px 4px; text-align: center; color: #746e64; font-size: 11px; }
-    .step { display:flex; align-items:center; gap:10px; color:var(--muted); font-size:12px; margin-bottom:17px; }
-    .step-number { display:grid; place-items:center; width:25px; height:25px; border-radius:50%; border:1px solid var(--gold); color:var(--gold); }
-    @media (min-width: 480px) { body { padding-left: 24px; padding-right: 24px; } .card { padding: 26px; } }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cybernetic Matrix Vault</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0D0E12;
+            --card: #16181E;
+            --card-alt: #1C1F26;
+            --gold: #C5A059;
+            --gold-light: #E5C888;
+            --text: #F2EFE9;
+            --muted: #8E8B82;
+            --border: #2A2722;
+        }
+        * { box-sizing: border-box; }
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 16px 14px 85px 14px;
+            font-size: 13.5px;
+            line-height: 1.55;
+        }
+        .header { text-align: center; border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-bottom: 18px; }
+        .tag { font-size: 9.5px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); font-weight: 600; }
+        h1 { font-family: 'Cormorant Garamond', serif; font-size: 28px; margin: 4px 0 2px 0; font-weight: 700; color: #FFF; }
+        .nav-tabs { display: flex; gap: 8px; margin-bottom: 18px; }
+        .tab-btn { flex: 1; background: var(--card); border: 1px solid var(--border); color: var(--muted); padding: 11px 6px; border-radius: 8px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; text-align: center; }
+        .tab-btn.active { border-color: var(--gold); color: var(--gold-light); background: #1F1D18; }
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 14px; }
+        label { display: block; font-size: 10.5px; text-transform: uppercase; letter-spacing: 1.3px; color: var(--muted); margin-bottom: 6px; }
+        input, select { width: 100%; background: #0F1015; border: 1px solid var(--border); color: var(--text); padding: 12px 14px; border-radius: 8px; font-family: 'Montserrat', sans-serif; font-size: 14px; margin-bottom: 12px; outline: none; }
+        input:focus { border-color: var(--gold); }
+        .btn { width: 100%; background: linear-gradient(135deg, #C5A059 0%, #9A7632 100%); color: #0D0E12; border: none; padding: 14px; border-radius: 8px; font-weight: 600; font-size: 12.5px; text-transform: uppercase; letter-spacing: 1.4px; cursor: pointer; margin-top: 4px; }
+        .btn-outline { background: transparent; border: 1px solid var(--gold); color: var(--gold-light); margin-top: 10px; }
+        .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 14px 0; }
+        .metric-box { background: #101217; border: 1px solid var(--border); border-radius: 8px; padding: 10px 4px; text-align: center; }
+        .metric-val { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 700; color: var(--gold); line-height: 1; }
+        .metric-lbl { font-size: 8.5px; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
+        .hook-box { background: #1B1914; border-left: 3px solid var(--gold); padding: 12px 14px; border-radius: 0 8px 8px 0; margin: 12px 0; font-size: 13px; }
+        .locked-list { background: #111318; border: 1px dashed #3A3325; border-radius: 8px; padding: 12px 14px; margin: 12px 0; font-size: 12.5px; color: #C7C2B8; }
+        .dossier-section { border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 12px; }
+        .dossier-section:last-child { border-bottom: none; }
+        .dossier-h { font-family: 'Cormorant Garamond', serif; font-size: 19px; color: var(--gold-light); margin: 0 0 6px 0; font-weight: 700; text-transform: uppercase; }
+        .vault-item { background: var(--card-alt); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .vault-item:hover { border-color: var(--gold); }
+    </style>
 </head>
 <body>
-  <main class="app">
-    <header>
-      <div class="eyebrow">Личный разбор · Сюцай</div>
-      <h1>Узнай свою<br>матрицу</h1>
-      <p class="subtitle">Исходные данные для персонального портрета, отношений или реализации. Заполни форму — и передай запрос боту.</p>
-      <div class="ornament"></div>
-    </header>
+    <div class="header">
+        <div class="tag">Cybernetic Matrix</div>
+        <h1>Архитектура Личности</h1>
+    </div>
 
-    <section class="card">
-      <div class="step"><span class="step-number">1</span><span>Данные для расчёта</span></div>
-      <h2 class="section-title">Создать запрос</h2>
-      <form id="portrait-form">
-        <div class="field">
-          <label for="birthdate">Дата рождения *</label>
-          <input id="birthdate" name="birthdate" type="date" required>
-        </div>
-        <div class="field">
-          <label for="surname">Фамилия (как в расчёте ФИО)</label>
-          <input id="surname" name="surname" autocomplete="family-name" placeholder="Фамилия">
-        </div>
-        <div class="field">
-          <label for="firstname">Имя</label>
-          <input id="firstname" name="firstname" autocomplete="given-name" placeholder="Имя">
-        </div>
-        <div class="field">
-          <label for="patronymic">Отчество</label>
-          <input id="patronymic" name="patronymic" placeholder="Отчество">
-        </div>
-        <div class="field">
-          <label for="focus">Что разобрать?</label>
-          <select id="focus" name="focus">
-            <option value="portrait">Полный личный портрет</option>
-            <option value="relationships">Отношения</option>
-            <option value="realization">Деньги и реализация</option>
-          </select>
-        </div>
-        <button class="primary" type="submit">Подготовить запрос</button>
-        <button class="secondary" type="button" id="reset">Очистить форму</button>
-      </form>
-      <div id="status" class="status" role="status" aria-live="polite"></div>
-    </section>
+    <div class="nav-tabs">
+        <div class="tab-btn active" id="tab-scan" onclick="switchTab('scan')">🔍 Сканер</div>
+        <div class="tab-btn" id="tab-compat" onclick="switchTab('compat')">💞 Пара</div>
+        <div class="tab-btn" id="tab-vault" onclick="switchTab('vault')">🗄 Мой Сейф</div>
+    </div>
 
-    <p class="note">Данные используются для подготовки запроса. Не вводи сведения, которыми не хочешь делиться с ботом.</p>
-    <footer>Персональный разбор · Версия интерфейса 0.1</footer>
-  </main>
+    <div id="view-scan">
+        <div class="card">
+            <label>Пол человека</label>
+            <select id="s-gender">
+                <option value="М">Мужчина</option>
+                <option value="Ж">Женщина</option>
+            </select>
+            <label>Дата рождения (ДД.ММ.ГГГГ)</label>
+            <input type="text" id="s-date" placeholder="12.05.1984">
+            <button class="btn" onclick="runPreview()">Сканировать матрицу</button>
+        </div>
 
-  <script>
-    (() => {
-      const tg = window.Telegram && window.Telegram.WebApp;
-      if (tg) {
-        tg.ready();
+        <div id="preview-card" class="card" style="display:none;">
+            <div class="tag">Первичный рентген кода</div>
+            <h2 id="p-title" style="font-family:'Cormorant Garamond',serif; font-size:24px; margin:4px 0;"></h2>
+            <div class="metrics">
+                <div class="metric-box"><div class="metric-val" id="p-chs"></div><div class="metric-lbl">Сознание</div></div>
+                <div class="metric-box"><div class="metric-val" id="p-chd"></div><div class="metric-lbl">Действие</div></div>
+                <div class="metric-box"><div class="metric-val" id="p-real"></div><div class="metric-lbl">Реализация</div></div>
+                <div class="metric-box"><div class="metric-val" id="p-itog"></div><div class="metric-lbl">Итог</div></div>
+            </div>
+            <div class="hook-box" id="p-hook"></div>
+            <div class="locked-list">
+                <b style="color:var(--gold-light);">🔒 Скрыто в полном досье:</b><br>
+                • Полная дешифровка алхимии дня и гендерного фильтра<br>
+                • Скрытый дефицит в отношениях и кто вам подойдет<br>
+                • Защитный панцирь в стрессе, пульт управления и Суперсила
+            </div>
+            <button class="btn" id="btn-buy-single" onclick="unlockSingle()">🔓 Открыть полное Досье и сохранить в Сейф (0 ₽)</button>
+        </div>
+    </div>
+
+    <div id="view-compat" style="display:none;">
+        <div class="card">
+            <label>Объект 1: Пол и Дата рождения</label>
+            <select id="c-g1"><option value="М">Мужчина</option><option value="Ж">Женщина</option></select>
+            <input type="text" id="c-d1" placeholder="12.05.1984">
+            <label>Объект 2 (Партнер): Пол и Дата рождения</label>
+            <select id="c-g2"><option value="Ж">Женщина</option><option value="М">Мужчина</option></select>
+            <input type="text" id="c-d2" placeholder="26.05.1989">
+            <button class="btn" id="btn-buy-compat" onclick="unlockCompat()">💞 Рассчитать Синастрию и сохранить в Сейф (0 ₽)</button>
+        </div>
+    </div>
+
+    <div id="view-vault" style="display:none;">
+        <div id="vault-list"></div>
+    </div>
+
+    <div id="view-dossier" class="card" style="display:none;">
+        <div id="dossier-content"></div>
+        <button class="btn btn-outline" onclick="switchTab('vault')">← Перейти в Мой Сейф</button>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
         tg.expand();
-        try {
-          if (tg.setHeaderColor) tg.setHeaderColor('#080808');
-          if (tg.setBackgroundColor) tg.setBackgroundColor('#080808');
-        } catch (_) {}
-      }
+        const urlParams = new URLSearchParams(window.location.search);
+        const userId = tg.initDataUnsafe?.user?.id || urlParams.get('uid') || 1001;
 
-      const form = document.getElementById('portrait-form');
-      const status = document.getElementById('status');
-      const reset = document.getElementById('reset');
+        // НАСТРОЙКИ МАРШРУТИЗАЦИИ
+        // Ваш Worker, который проксирует запросы, скрывая экран Cloudflare
+        const WORKER_URL = 'https://embracemydream.workers.dev';
+        
+        // ВСТАВЬТЕ СЮДА ВАШУ ТЕКУЩУЮ ССЫЛКУ ИЗ КОНСОЛИ (без слеша на конце):
+        const TUNNEL_URL = 'https://interest-withdrawal-ver-subsidiary.trycloudflare.com'; 
 
-      function show(message, isError = false) {
-        status.textContent = message;
-        status.classList.add('show');
-        status.classList.toggle('error', isError);
-      }
-
-      form.addEventListener('submit', (event) => {
-        event.preventDefault();
-        const data = new FormData(form);
-        const payload = {
-          action: 'create_portrait',
-          birthdate: String(data.get('birthdate') || ''),
-          surname: String(data.get('surname') || '').trim(),
-          firstname: String(data.get('firstname') || '').trim(),
-          patronymic: String(data.get('patronymic') || '').trim(),
-          focus: String(data.get('focus') || 'portrait'),
-          source: 'telegram_mini_app'
-        };
-
-        if (!payload.birthdate) {
-          show('Укажи дату рождения, чтобы продолжить.', true);
-          return;
+        // Функция отправки запросов через Worker
+        async function apiFetch(path, options = {}) {
+            options.headers = options.headers || {};
+            options.headers['X-Target-Url'] = TUNNEL_URL;
+            if (!options.headers['Content-Type'] && options.body) {
+                options.headers['Content-Type'] = 'application/json';
+            }
+            return fetch(WORKER_URL + path, options);
         }
 
-        if (tg && typeof tg.sendData === 'function') {
-          // sendData works when the Mini App is launched via a keyboard Web App button.
-          // The Python bot must implement a handler for web_app_data to process this payload.
-          try {
-            tg.sendData(JSON.stringify(payload));
-            show('Запрос передан Telegram. Следующий шаг — подключить обработчик в Python-боте.');
-          } catch (e) {
-            show('Не удалось передать данные. Проверь способ запуска Mini App и обработчик бота.', true);
-          }
-        } else {
-          show('Предпросмотр: форма работает, но сейчас страница открыта вне Telegram. После публикации подключим её к Python-боту.');
-          console.info('Mini App payload preview:', payload);
+        function switchTab(tab) {
+            ['scan', 'compat', 'vault'].forEach(t => {
+                document.getElementById('view-' + t).style.display = (t === tab) ? 'block' : 'none';
+                document.getElementById('tab-' + t).classList.toggle('active', t === tab);
+            });
+            document.getElementById('view-dossier').style.display = 'none';
+            if (tab === 'vault') loadVault();
         }
-      });
 
-      reset.addEventListener('click', () => {
-        form.reset();
-        status.className = 'status';
-        status.textContent = '';
-      });
-    })();
-  </script>
+        async function runPreview() {
+            const date = document.getElementById('s-date').value.trim();
+            const gender = document.getElementById('s-gender').value;
+            const res = await apiFetch(`/api/preview?user_id=${userId}&date=${encodeURIComponent(date)}&gender=${encodeURIComponent(gender)}`);
+            if (!res.ok) { alert('Введите дату в формате ДД.ММ.ГГГГ'); return; }
+            const d = await res.json();
+            
+            document.getElementById('preview-card').style.display = 'block';
+            document.getElementById('p-title').innerText = `${d.raw_date} (${d.age} лет)`;
+            document.getElementById('p-chs').innerText = `${d.day_raw}→${d.chs}`;
+            document.getElementById('p-chd').innerText = `${d.chd_raw_sum}→${d.chd}`;
+            document.getElementById('p-real').innerText = `${d.realization_raw_sum}→${d.realization}`;
+            document.getElementById('p-itog').innerText = d.itog;
+            document.getElementById('p-hook').innerHTML = d.hook_text.replace(/\\n/g, '<br>');
+
+            const btn = document.getElementById('btn-buy-single');
+            btn.innerText = d.already_saved ? '📂 Открыть готовое Досье из Сейфа (Мгновенно)' : '🔓 Открыть полное Досье и сохранить в Сейф (0 ₽)';
+        }
+
+        async function unlockSingle() {
+            const btn = document.getElementById('btn-buy-single');
+            const date = document.getElementById('s-date').value.trim();
+            const gender = document.getElementById('s-gender').value;
+            btn.disabled = true; btn.innerText = '🧬 Загрузка / Дешифровка матрицы...';
+            try {
+                const res = await apiFetch(`/api/unlock_single`, {
+                    method: 'POST',
+                    body: JSON.stringify({user_id: Number(userId), date, gender})
+                });
+                renderDossierView(await res.json());
+            } catch (e) { alert('Ошибка при получении досье'); } 
+            finally { btn.disabled = false; btn.innerText = '📂 Открыть готовое Досье из Сейфа (Мгновенно)'; }
+        }
+
+        async function unlockCompat() {
+            const btn = document.getElementById('btn-buy-compat');
+            const d1 = document.getElementById('c-d1').value.trim(), g1 = document.getElementById('c-g1').value;
+            const d2 = document.getElementById('c-d2').value.trim(), g2 = document.getElementById('c-g2').value;
+            btn.disabled = true; btn.innerText = '💞 Загрузка / Синхронизация матриц...';
+            try {
+                const res = await apiFetch(`/api/unlock_compat`, {
+                    method: 'POST',
+                    body: JSON.stringify({user_id: Number(userId), d1, g1, d2, g2})
+                });
+                renderDossierView(await res.json());
+            } catch (e) { alert('Проверьте правильность обеих дат (ДД.ММ.ГГГГ)'); } 
+            finally { btn.disabled = false; btn.innerText = '💞 Рассчитать Синастрию и сохранить в Сейф (0 ₽)'; }
+        }
+
+        async function loadVault() {
+            const res = await apiFetch(`/api/vault?user_id=${userId}`);
+            const items = await res.json();
+            const box = document.getElementById('vault-list');
+            if (!items.length) { box.innerHTML = '<div class="card" style="text-align:center;color:var(--muted);">В вашем Сейфе пока нет сохраненных досье.</div>'; return; }
+            box.innerHTML = items.map(r => `
+                <div class="vault-item" onclick="openSavedReport(${r.id})">
+                    <div>
+                        <div class="tag">${r.report_type === 'single' ? 'Личное досье' : 'Синастрия пары'} • ${r.created_at}</div>
+                        <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:#FFF;">${r.title}</div>
+                        <div style="font-size:12px;color:var(--gold-light);">${r.subtitle}</div>
+                    </div>
+                    <div style="color:var(--gold);font-size:20px;">→</div>
+                </div>
+            `).join('');
+        }
+
+        async function openSavedReport(id) { renderDossierView(await (await apiFetch(`/api/report/${id}`)).json()); }
+
+        function renderDossierView(item) {
+            ['scan', 'compat', 'vault'].forEach(t => document.getElementById('view-' + t).style.display = 'none');
+            const box = document.getElementById('view-dossier');
+            const content = document.getElementById('dossier-content');
+            box.style.display = 'block';
+
+            if (item.report_type === 'single') {
+                const p = item.profile, d = item.report;
+                content.innerHTML = `
+                    <div class="tag">Кибернетическое Досье • ${p.raw_date} (${p.age} лет)</div>
+                    <h2 style="font-family:'Cormorant Garamond',serif;font-size:26px;color:#FFF;margin:4px 0 12px 0;">«${d.archetype_title}»</h2>
+                    <div class="metrics">
+                        <div class="metric-box"><div class="metric-val">${p.day_raw}→${p.chs}</div><div class="metric-lbl">ЧС (Ядро)</div></div>
+                        <div class="metric-box"><div class="metric-val">${p.chd_raw_sum}→${p.chd}</div><div class="metric-lbl">ЧД (Вектор)</div></div>
+                        <div class="metric-box"><div class="metric-val">${p.realization_raw_sum}→${p.realization}</div><div class="metric-lbl">Реализация</div></div>
+                        <div class="metric-box"><div class="metric-val">${p.itog}</div><div class="metric-lbl">Итог</div></div>
+                    </div>
+                    <div class="dossier-section"><div class="dossier-h">00. Дешифровка исходного кода</div>
+                        <p><b>ЧС (${p.day_raw}→${p.chs}):</b> ${d.core_chs_decoding}</p>
+                        <p><b>ЧД (${p.chd_raw_sum}→${p.chd}):</b> ${d.core_chd_decoding}</p>
+                        <p><b>Реализация (${p.realization_raw_sum}→${p.realization}) и Итог (${p.itog}):</b> ${d.core_realization_decoding}</p>
+                        <p><b>Возраст (${p.age} л.):</b> ${d.core_age_summary}</p>
+                    </div>
+                    <div class="dossier-section"><div class="dossier-h">01. Мыслит и действует</div><p>${d.thinking_and_action.replace(/\\n/g, '<br><br>')}</p></div>
+                    <div class="dossier-section"><div class="dossier-h">02. Возрастной этап и текущая фаза</div><p>${d.age_phase_analysis}</p></div>
+                    <div class="dossier-section"><div class="dossier-h">03. Поведение в отношениях</div>
+                        <p><b style="color:var(--gold);">В чем нуждается (дефицит):</b> ${d.rel_needs}</p>
+                        <p><b style="color:var(--gold);">Чего хочет (запрос):</b> ${d.rel_wants}</p>
+                        <p><b style="color:var(--gold);">Какой партнер подойдет:</b> ${d.rel_partner}</p>
+                    </div>
+                    <div class="dossier-section"><div class="dossier-h">04. Боится (Триггеры и броня)</div><p>${d.fears_and_armor}</p></div>
+                    <div class="dossier-section"><div class="dossier-h">05. Как взаимодействовать</div><p>${d.interaction_manual}</p></div>
+                    <div class="dossier-section"><div class="dossier-h">06. Вектор эволюции</div>
+                        <p><b style="color:var(--gold);">Вектор роста:</b> ${d.growth_vector}</p>
+                        <p><b style="color:var(--gold);">Что закрыть:</b> ${d.growth_drop}</p>
+                        <p><b style="color:var(--gold);">Фокус внимания:</b> ${d.growth_focus}</p>
+                    </div>
+                    <div class="hook-box"><div class="dossier-h">✦ 07. Квантовая Суперсила</div><div>${d.superpower}</div></div>
+                `;
+            } else {
+                const p1 = item.profile.p1, p2 = item.profile.p2, d = item.report;
+                content.innerHTML = `
+                    <div class="tag">Синастрия Матриц • ${p1.raw_date} × ${p2.raw_date}</div>
+                    <h2 style="font-family:'Cormorant Garamond',serif;font-size:26px;color:#FFF;margin:4px 0 12px 0;">«${d.union_title}»</h2>
+                    <div class="hook-box"><b>Синтез ядер:</b> ${d.matrix_collision_summary}</div>
+                    <div class="dossier-section"><div class="dossier-h">01. Архитектурная химия</div><p>${d.chemistry}</p></div>
+                    <div class="dossier-section"><div class="dossier-h">02. Слепые зоны и короткие замыкания</div><p>${d.blind_spots}</p></div>
+                    <div class="dossier-section"><div class="dossier-h">03. Сценарий в конфликте</div><p>${d.conflict_scenario}</p></div>
+                    <div class="dossier-section"><div class="dossier-h">04. Протокол синхронизации</div>
+                        <p><b style="color:var(--gold);">Для ${p1.raw_date}:</b> ${d.sync_protocol_p1}</p>
+                        <p><b style="color:var(--gold);">Для ${p2.raw_date}:</b> ${d.sync_protocol_p2}</p>
+                    </div>
+                    <div class="hook-box"><div class="dossier-h">✦ 05. Суперсила Союза</div><div>${d.union_superpower}</div></div>
+                `;
+            }
+            window.scrollTo(0, 0);
+        }
+    </script>
 </body>
 </html>
