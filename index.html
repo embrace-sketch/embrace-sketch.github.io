@@ -178,34 +178,75 @@
             }
         }
 
-        async function unlockSingle() {
+	async function unlockSingle() {
             const btn = document.getElementById('btn-buy-single');
             const date = document.getElementById('s-date').value.trim();
             const gender = document.getElementById('s-gender').value;
-            btn.disabled = true; btn.innerText = 'Загрузка...';
+            btn.disabled = true; btn.innerText = 'Генерация досье (10-20 сек)...';
             try {
                 const res = await apiFetch(`/api/unlock_single`, {
                     method: 'POST',
-                    body: JSON.stringify({user_id: Number(userId), date, gender})
+                    body: JSON.stringify({user_id: Number(userId), date: date, gender: gender})
                 });
-                renderDossierView(await res.json());
-            } catch (e) { alert('Ошибка при получении досье'); } 
-            finally { btn.disabled = false; btn.innerText = '📂 Открыть готовое Досье'; }
+                if (!res.ok) {
+                    const errText = await res.text();
+                    alert(`Ошибка сервера (${res.status}): ${errText}`);
+                    return;
+                }
+                const data = await res.json();
+                renderDossierView(data);
+            } catch (e) { 
+                alert('Сбой соединения: ' + e.message); 
+            } finally { 
+                btn.disabled = false; btn.innerText = '📂 Открыть готовое Досье'; 
+            }
         }
 
         async function unlockCompat() {
             const btn = document.getElementById('btn-buy-compat');
             const d1 = document.getElementById('c-d1').value.trim(), g1 = document.getElementById('c-g1').value;
             const d2 = document.getElementById('c-d2').value.trim(), g2 = document.getElementById('c-g2').value;
-            btn.disabled = true; btn.innerText = 'Загрузка...';
+            btn.disabled = true; btn.innerText = 'Расчет синастрии (10-20 сек)...';
             try {
                 const res = await apiFetch(`/api/unlock_compat`, {
                     method: 'POST',
-                    body: JSON.stringify({user_id: Number(userId), d1, g1, d2, g2})
+                    body: JSON.stringify({user_id: Number(userId), d1: d1, g1: g1, d2: d2, g2: g2})
                 });
-                renderDossierView(await res.json());
-            } catch (e) { alert('Ошибка при расчете синастрии'); } 
-            finally { btn.disabled = false; btn.innerText = '💞 Рассчитать Синастрию'; }
+                if (!res.ok) {
+                    const errText = await res.text();
+                    alert(`Ошибка сервера (${res.status}): ${errText}`);
+                    return;
+                }
+                const data = await res.json();
+                renderDossierView(data);
+            } catch (e) { 
+                alert('Сбой соединения: ' + e.message); 
+            } finally { 
+                btn.disabled = false; btn.innerText = '💞 Рассчитать Синастрию'; 
+            }
+        }
+        async function unlockCompat() {
+            const btn = document.getElementById('btn-buy-compat');
+            const d1 = document.getElementById('c-d1').value.trim(), g1 = document.getElementById('c-g1').value;
+            const d2 = document.getElementById('c-d2').value.trim(), g2 = document.getElementById('c-g2').value;
+            btn.disabled = true; btn.innerText = 'Расчет синастрии (10-20 сек)...';
+            try {
+                const res = await apiFetch(`/api/unlock_compat`, {
+                    method: 'POST',
+                    body: JSON.stringify({user_id: Number(userId), d1: d1, g1: g1, d2: d2, g2: g2})
+                });
+                if (!res.ok) {
+                    const errText = await res.text();
+                    alert(`Ошибка сервера (${res.status}): ${errText}`);
+                    return;
+                }
+                const data = await res.json();
+                renderDossierView(data);
+            } catch (e) { 
+                alert('Сбой соединения: ' + e.message); 
+            } finally { 
+                btn.disabled = false; btn.innerText = '💞 Рассчитать Синастрию'; 
+            }
         }
 
         async function loadVault() {
