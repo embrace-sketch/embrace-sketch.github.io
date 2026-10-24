@@ -130,18 +130,17 @@
         const TUNNEL_URL = 'https://stout-flavoring-helpline.ngrok-free.dev'; 
 
         // Функция отправки запросов через Worker
-// Прямой запрос на ваш ПК с обходом защиты Ngrok
+        const WORKER_URL = 'https://embracemydream.workers.dev';
+        const TUNNEL_URL = 'https://stout-flavoring-helpline.ngrok-free.dev'; // Укажите ваш домен Ngrok
+
         async function apiFetch(path, options = {}) {
             options.headers = options.headers || {};
-            
-            // Официальный заголовок для пропуска экрана Ngrok
-            options.headers['ngrok-skip-browser-warning'] = 'true';
-            
+            options.headers['X-Target-Url'] = TUNNEL_URL;
             if (!options.headers['Content-Type'] && options.body) {
                 options.headers['Content-Type'] = 'application/json';
             }
-            return fetch(TUNNEL_URL + path, options);
-        }}
+            return fetch(WORKER_URL + path, options);
+        }
 
         function switchTab(tab) {
             ['scan', 'compat', 'vault'].forEach(t => {
