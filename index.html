@@ -128,15 +128,17 @@
 
         // --- ВАШИ НАСТРОЙКИ ---
         const WORKER_URL = 'https://embracemydream.workers.dev';
-        const TUNNEL_URL = 'https://stout-flavoring-helpline.ngrok-free.dev'; // УКАЖИТЕ ВАШ ДОМЕН NGROK ЗДЕСЬ
+        const TUNNEL_URL = 'https://stout-flavoring-helpline.ngrok-free.dev'; 
 
         async function apiFetch(path, options = {}) {
             options.headers = options.headers || {};
-            options.headers['X-Target-Url'] = TUNNEL_URL;
+            options.headers['ngrok-skip-browser-warning'] = 'true';
+            
             if (!options.headers['Content-Type'] && options.body) {
                 options.headers['Content-Type'] = 'application/json';
             }
-            return fetch(WORKER_URL + path, options);
+            // Прямой запрос на ваш ПК без посредников
+            return fetch(TUNNEL_URL + path, options);
         }
 
         function switchTab(tab) {
