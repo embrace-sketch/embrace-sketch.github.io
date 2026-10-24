@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -92,7 +93,7 @@
                 • Скрытый дефицит в отношениях и кто вам подойдет<br>
                 • Защитный панцирь в стрессе, пульт управления и Суперсила
             </div>
-            <button class="btn" id="btn-buy-single" onclick="unlockSingle()">🔓 Открыть полное Досье и сохранить в Сейф (0 ₽)</button>
+            <button class="btn" id="btn-buy-single" onclick="unlockSingle()">🔓 Открыть полное Досье (0 ₽)</button>
         </div>
     </div>
 
@@ -104,7 +105,7 @@
             <label>Объект 2 (Партнер): Пол и Дата рождения</label>
             <select id="c-g2"><option value="Ж">Женщина</option><option value="М">Мужчина</option></select>
             <input type="text" id="c-d2" placeholder="26.05.1989">
-            <button class="btn" id="btn-buy-compat" onclick="unlockCompat()">💞 Рассчитать Синастрию и сохранить в Сейф (0 ₽)</button>
+            <button class="btn" id="btn-buy-compat" onclick="unlockCompat()">💞 Рассчитать Синастрию (0 ₽)</button>
         </div>
     </div>
 
@@ -118,20 +119,16 @@
     </div>
 
     <script>
+        console.log("Скрипт успешно загружен.");
+
         const tg = window.Telegram.WebApp;
-        tg.expand();
+        try { tg.expand(); } catch(e) {}
         const urlParams = new URLSearchParams(window.location.search);
         const userId = tg.initDataUnsafe?.user?.id || urlParams.get('uid') || 1001;
 
-        // НАСТРОЙКИ МАРШРУТИЗАЦИИ
+        // --- ВАШИ НАСТРОЙКИ ---
         const WORKER_URL = 'https://embracemydream.workers.dev';
-        
-        // ВСТАВЬТЕ СЮДА ВАШУ ТЕКУЩУЮ ССЫЛКУ ИЗ КОНСОЛИ (без слеша на конце):
-        const TUNNEL_URL = 'https://stout-flavoring-helpline.ngrok-free.dev'; 
-
-        // Функция отправки запросов через Worker
-        const WORKER_URL = 'https://embracemydream.workers.dev';
-        const TUNNEL_URL = 'https://stout-flavoring-helpline.ngrok-free.dev'; // Укажите ваш домен Ngrok
+        const TUNNEL_URL = 'https://stout-flavoring-helpline.ngrok-free.dev'; // УКАЖИТЕ ВАШ ДОМЕН NGROK ЗДЕСЬ
 
         async function apiFetch(path, options = {}) {
             options.headers = options.headers || {};
@@ -152,34 +149,33 @@
         }
 
         async function runPreview() {
+            console.log("Запрос отправлен...");
             const date = document.getElementById('s-date').value.trim();
             const gender = document.getElementById('s-gender').value;
             
             try {
                 const res = await apiFetch(`/api/preview?user_id=${userId}&date=${encodeURIComponent(date)}&gender=${encodeURIComponent(gender)}`);
-                if (!res.ok) { alert('Введите дату в формате ДД.ММ.ГГГГ'); return; }
+                if (!res.ok) { alert('Ошибка связи с сервером.'); return; }
                 
                 const d = await res.json();
+                console.log("Ответ получен:", d);
                 
                 document.getElementById('preview-card').style.display = 'block';
                 document.getElementById('p-title').innerText = `${d.raw_date || date} (${d.age || '—'} лет)`;
-                
-                // Безопасный вывод чисел с проверкой наличия переменных
                 document.getElementById('p-chs').innerText = d.day_raw ? `${d.day_raw}→${d.chs}` : (d.chs || '—');
                 document.getElementById('p-chd').innerText = d.chd_raw_sum ? `${d.chd_raw_sum}→${d.chd}` : (d.chd || '—');
                 document.getElementById('p-real').innerText = d.realization_raw_sum ? `${d.realization_raw_sum}→${d.realization}` : (d.realization || '—');
                 document.getElementById('p-itog').innerText = d.itog || '—';
                 
-                // Защищаем hook_text от ошибки, если скрипт его не отдал
-                const hook = d.hook_text || "Базовый анализ завершен. Квантовая матрица готова к полной дешифровке.";
+                const hook = d.hook_text || "Базовый анализ завершен. Матрица готова к дешифровке.";
                 document.getElementById('p-hook').innerHTML = String(hook).replace(/\\n/g, '<br>');
 
                 const btn = document.getElementById('btn-buy-single');
-                btn.innerText = d.already_saved ? '📂 Открыть готовое Досье из Сейфа (Мгновенно)' : '🔓 Открыть полное Досье и сохранить в Сейф (0 ₽)';
+                btn.innerText = d.already_saved ? '📂 Открыть готовое Досье' : '🔓 Открыть полное Досье (0 ₽)';
                 
             } catch (e) {
-                console.error("Ошибка сети или обработки JSON:", e);
-                alert('Ошибка при подключении к серверу расчетов.');
+                console.error("Критическая ошибка:", e);
+                alert('Не удалось связаться с сервером.');
             }
         }
 
@@ -187,7 +183,7 @@
             const btn = document.getElementById('btn-buy-single');
             const date = document.getElementById('s-date').value.trim();
             const gender = document.getElementById('s-gender').value;
-            btn.disabled = true; btn.innerText = '🧬 Загрузка / Дешифровка матрицы...';
+            btn.disabled = true; btn.innerText = 'Загрузка...';
             try {
                 const res = await apiFetch(`/api/unlock_single`, {
                     method: 'POST',
@@ -195,35 +191,35 @@
                 });
                 renderDossierView(await res.json());
             } catch (e) { alert('Ошибка при получении досье'); } 
-            finally { btn.disabled = false; btn.innerText = '📂 Открыть готовое Досье из Сейфа (Мгновенно)'; }
+            finally { btn.disabled = false; btn.innerText = '📂 Открыть готовое Досье'; }
         }
 
         async function unlockCompat() {
             const btn = document.getElementById('btn-buy-compat');
             const d1 = document.getElementById('c-d1').value.trim(), g1 = document.getElementById('c-g1').value;
             const d2 = document.getElementById('c-d2').value.trim(), g2 = document.getElementById('c-g2').value;
-            btn.disabled = true; btn.innerText = '💞 Загрузка / Синхронизация матриц...';
+            btn.disabled = true; btn.innerText = 'Загрузка...';
             try {
                 const res = await apiFetch(`/api/unlock_compat`, {
                     method: 'POST',
                     body: JSON.stringify({user_id: Number(userId), d1, g1, d2, g2})
                 });
                 renderDossierView(await res.json());
-            } catch (e) { alert('Проверьте правильность обеих дат (ДД.ММ.ГГГГ)'); } 
-            finally { btn.disabled = false; btn.innerText = '💞 Рассчитать Синастрию и сохранить в Сейф (0 ₽)'; }
+            } catch (e) { alert('Ошибка при расчете синастрии'); } 
+            finally { btn.disabled = false; btn.innerText = '💞 Рассчитать Синастрию'; }
         }
 
         async function loadVault() {
             const res = await apiFetch(`/api/vault?user_id=${userId}`);
             const items = await res.json();
             const box = document.getElementById('vault-list');
-            if (!items.length) { box.innerHTML = '<div class="card" style="text-align:center;color:var(--muted);">В вашем Сейфе пока нет сохраненных досье.</div>'; return; }
+            if (!items.length) { box.innerHTML = '<div class="card" style="text-align:center;color:var(--muted);">Сейф пуст.</div>'; return; }
             box.innerHTML = items.map(r => `
                 <div class="vault-item" onclick="openSavedReport(${r.id})">
                     <div>
-                        <div class="tag">${r.report_type === 'single' ? 'Личное досье' : 'Синастрия пары'} • ${r.created_at}</div>
+                        <div class="tag">${r.report_type === 'single' ? 'Личное досье' : 'Синастрия'} • ${r.created_at}</div>
                         <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:#FFF;">${r.title}</div>
-                        <div style="font-size:12px;color:var(--gold-light);">${r.subtitle}</div>
+                        <div style="font-size:12px;color:var(--gold-light);">${r.subtitle || ''}</div>
                     </div>
                     <div style="color:var(--gold);font-size:20px;">→</div>
                 </div>
@@ -240,7 +236,6 @@
 
             if (item.report_type === 'single') {
                 const p = item.profile, d = item.report;
-                // Безопасный парсинг досье
                 content.innerHTML = `
                     <div class="tag">Кибернетическое Досье • ${p.raw_date} (${p.age} лет)</div>
                     <h2 style="font-family:'Cormorant Garamond',serif;font-size:26px;color:#FFF;margin:4px 0 12px 0;">«${d.archetype_title || 'Анализ завершен'}»</h2>
