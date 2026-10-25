@@ -219,11 +219,14 @@
             
             updateVisualMatrix(date);
 
-            const linesBox = document.getElementById('matrix-lines-box');
+	    const linesBox = document.getElementById('matrix-lines-box');
             if (d.matrix_lines) {
                 const active = d.matrix_lines.filter(l => l.is_active);
+                const inactive = d.matrix_lines.filter(l => !l.is_active);
+                
                 let html = '';
                 if (active.length > 0) {
+                    html += `<div style="font-size:10px; text-transform:uppercase; color:var(--gold); letter-spacing:1px; margin-bottom:6px; font-weight:600;">📐 Активные линии матрицы:</div>`;
                     active.forEach(l => {
                         html += `
                             <div class="line-card">
@@ -233,7 +236,19 @@
                         `;
                     });
                 } else {
-                    html = `<div class="line-text" style="color:var(--muted);">В дате нет полностью замкнутых линий (3 из 3 цифр). Матрица работает через точечные фокусы.</div>`;
+                    html = `<div class="line-text" style="color:var(--muted); margin-bottom:8px;">⚪️ В дате нет полностью замкнутых линий (3 из 3 цифр). Матрица работает через точечные фокусы.</div>`;
+                }
+
+                // Выпадающий список для неактивных линий
+                if (inactive.length > 0) {
+                    html += `
+                        <details style="background:#111318; border:1px solid var(--border); border-radius:8px; padding:9px 12px; font-size:11.5px; color:var(--muted); cursor:pointer; margin-top:10px;">
+                            <summary style="color:#C7C2B8; font-weight:500; outline:none;">Показать разомкнутые линии — зоны роста (${inactive.length})</summary>
+                            <div style="margin-top:10px; display:flex; flex-direction:column; gap:6px; border-top:1px solid var(--border); pt-8px;">
+                                ${inactive.map(l => `<div style="padding-top:4px;"><b style="color:var(--gold);">• [${l.code}] ${l.name} (${l.count}/3):</b> <span style="color:#A6A298;">${l.desc}</span></div>`).join('')}
+                            </div>
+                        </details>
+                    `;
                 }
                 linesBox.innerHTML = html;
             }
