@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cybernetic Matrix Vault v5</title>
-    <script type="text/javascript" src="https://gc.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=j-jxJnlju1KU9g2atKi9FLqOw19tnvFOoD0Pp54vUVZw_RHoYuITVnpxazycZxzRoNryv27G_NrzDSfA1QLG7nROVnm00xlYHYwsNg_wpHs2m29LEZnPRyb1361tPgQ4MM-kxpfws_fStmIvl1eEM0_ZOpXJNegJ4KZV42tZ7_g70wxt6KeFTl1ojt0MPSsvLWUQ3ed1QlGmby_ipzrM4Mv6dzHhmT2ddFvlz9QhMrQmExOFjGysp5BY6SirQsbVSXYIySJ1YDrnVvLsp8eWfn-4CDhn99emfZzkjxHmpZoax_vcXRYZxtOPd-xxu9y4" charset="UTF-8"></script><script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <title>Personal Matrix</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -44,18 +44,18 @@
         /* Метрики и аббревиатуры */
         .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin: 14px 0; }
         .metric-box { background: #101217; border: 1px solid var(--border); border-radius: 8px; padding: 8px 2px; text-align: center; }
-        .metric-val { font-family: 'Cormorant Garamond', serif; font-size: 19px; font-weight: 700; color: var(--gold); line-height: 1.1; }
-        .metric-lbl { font-size: 7.5px; text-transform: uppercase; color: var(--muted); margin-top: 3px; letter-spacing: 0.5px; }
+        .metric-val { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 700; color: var(--gold); line-height: 1.1; }
+        .metric-lbl { font-size: 7.5px; text-transform: uppercase; color: var(--muted); margin-top: 3px; letter-spacing: 0.3px; }
 
-        /* Визуальная матрица 3х3 */
-        .matrix-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 16px 0; }
-        .matrix-cell { background: #101217; border: 1px solid var(--border); border-radius: 8px; padding: 10px 6px; text-align: center; opacity: 0.35; transition: all 0.3s; }
+        /* Визуальная матрица 3х3 (снизу вверх: 1-2-3, 4-5-6, 7-8-9) */
+        .matrix-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 12px 0 16px 0; }
+        .matrix-cell { background: #101217; border: 1px solid var(--border); border-radius: 8px; padding: 10px 4px; text-align: center; opacity: 0.35; transition: all 0.3s; }
         .matrix-cell.active { background: #1F1D18; border-color: var(--gold); opacity: 1; box-shadow: 0 0 10px rgba(197, 160, 89, 0.15); }
         .matrix-num { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 700; color: var(--text); line-height: 1; }
         .matrix-cell.active .matrix-num { color: var(--gold-light); }
         .matrix-name { font-size: 9px; text-transform: uppercase; color: var(--muted); margin-top: 3px; font-weight: 600; }
         .matrix-cell.active .matrix-name { color: var(--gold); }
-        .matrix-desc { font-size: 8px; color: #8E8B82; margin-top: 2px; }
+        .matrix-desc { font-size: 8px; color: #A6A298; margin-top: 2px; line-height: 1.25; }
 
         .hook-box { background: #1B1914; border-left: 3px solid var(--gold); padding: 12px 14px; border-radius: 0 8px 8px 0; margin: 12px 0; font-size: 13px; }
         .locked-list { background: #111318; border: 1px dashed #3A3325; border-radius: 8px; padding: 12px 14px; margin: 12px 0; font-size: 12.5px; color: #C7C2B8; }
@@ -71,7 +71,7 @@
 </head>
 <body>
     <div class="header">
-        <div class="tag">Cybernetic Matrix • v5.0</div>
+        <div class="tag">PERSONAL MATRIX</div>
         <h1>Архитектура Личности</h1>
     </div>
 
@@ -102,25 +102,25 @@
             <div class="metrics">
                 <div class="metric-box"><div class="metric-val" id="p-chs"></div><div class="metric-lbl">ЧС (Сознание)</div></div>
                 <div class="metric-box"><div class="metric-val" id="p-chd"></div><div class="metric-lbl">ЧД (Действие)</div></div>
-                <div class="metric-box"><div class="metric-val" id="p-real"></div><div class="metric-lbl">КР (Реализация)</div></div>
-                <div class="metric-box"><div class="metric-val" id="p-itog"></div><div class="metric-lbl">ИТ (Итог)</div></div>
+                <div class="metric-box"><div class="metric-val" id="p-real"></div><div class="metric-lbl">ЧР (Реализация)</div></div>
+                <div class="metric-box"><div class="metric-val" id="p-itog"></div><div class="metric-lbl">Итог</div></div>
             </div>
 
-            <!-- Визуальная матрица 3х3 (Левый столбец 1,2,3 | Средний 4,5,6 | Правый 7,8,9) -->
-            <div style="font-size:10px; text-transform:uppercase; color:var(--muted); letter-spacing:1px; margin-top:12px; margin-bottom:4px;">Психоматрица 3×3 (активные энергии):</div>
+            <!-- Визуальная матрица 3х3: снизу вверх левый столбец 1-2-3, средний 4-5-6, правый 7-8-9 -->
+            <div style="font-size:10px; text-transform:uppercase; color:var(--muted); letter-spacing:1px; margin-top:12px; margin-bottom:4px;">Психоматрица (активные энергии даты):</div>
             <div class="matrix-grid" id="matrix-visual-grid">
-                <!-- Ряд 3: ячейки 1, 4, 7 -->
-                <div class="matrix-cell" id="m-cell-1"><div class="matrix-num">1</div><div class="matrix-name">Солнце</div><div class="matrix-desc">Лидер</div></div>
-                <div class="matrix-cell" id="m-cell-4"><div class="matrix-num">4</div><div class="matrix-name">Раху</div><div class="matrix-desc">Новатор</div></div>
-                <div class="matrix-cell" id="m-cell-7"><div class="matrix-num">7</div><div class="matrix-name">Кету</div><div class="matrix-desc">Сканер</div></div>
-                <!-- Ряд 2: ячейки 2, 5, 8 -->
-                <div class="matrix-cell" id="m-cell-2"><div class="matrix-num">2</div><div class="matrix-name">Луна</div><div class="matrix-desc">Психолог</div></div>
-                <div class="matrix-cell" id="m-cell-5"><div class="matrix-num">5</div><div class="matrix-name">Меркурий</div><div class="matrix-desc">Скорость</div></div>
-                <div class="matrix-cell" id="m-cell-8"><div class="matrix-num">8</div><div class="matrix-name">Сатурн</div><div class="matrix-desc">Контролер</div></div>
-                <!-- Ряд 1: ячейки 3, 6, 9 -->
-                <div class="matrix-cell" id="m-cell-3"><div class="matrix-num">3</div><div class="matrix-name">Юпитер</div><div class="matrix-desc">Логика</div></div>
-                <div class="matrix-cell" id="m-cell-6"><div class="matrix-num">6</div><div class="matrix-name">Венера</div><div class="matrix-desc">Гедонист</div></div>
-                <div class="matrix-cell" id="m-cell-9"><div class="matrix-num">9</div><div class="matrix-name">Марс</div><div class="matrix-desc">Воин</div></div>
+                <!-- Верхний ряд сетки: 3, 6, 9 -->
+                <div class="matrix-cell" id="m-cell-3"><div class="matrix-num">3</div><div class="matrix-name">Юпитер</div><div class="matrix-desc">Системная логика и структура</div></div>
+                <div class="matrix-cell" id="m-cell-6"><div class="matrix-num">6</div><div class="matrix-name">Венера</div><div class="matrix-desc">Комфорт, любовь и магнетизм</div></div>
+                <div class="matrix-cell" id="m-cell-9"><div class="matrix-num">9</div><div class="matrix-name">Марс</div><div class="matrix-desc">Воля, напор и преодоление</div></div>
+                <!-- Средний ряд сетки: 2, 5, 8 -->
+                <div class="matrix-cell" id="m-cell-2"><div class="matrix-num">2</div><div class="matrix-name">Луна</div><div class="matrix-desc">Психология, эмпатия и связи</div></div>
+                <div class="matrix-cell" id="m-cell-5"><div class="matrix-num">5</div><div class="matrix-name">Меркурий</div><div class="matrix-desc">Скорость, выгода и коммуникация</div></div>
+                <div class="matrix-cell" id="m-cell-8"><div class="matrix-num">8</div><div class="matrix-name">Сатурн</div><div class="matrix-desc">Тотальный контроль и результат</div></div>
+                <!-- Нижний ряд сетки: 1, 4, 7 -->
+                <div class="matrix-cell" id="m-cell-1"><div class="matrix-num">1</div><div class="matrix-name">Солнце</div><div class="matrix-desc">Лидерство, эго и автономия</div></div>
+                <div class="matrix-cell" id="m-cell-4"><div class="matrix-num">4</div><div class="matrix-name">Раху</div><div class="matrix-desc">Новаторство и взлом рамок</div></div>
+                <div class="matrix-cell" id="m-cell-7"><div class="matrix-num">7</div><div class="matrix-name">Кету</div><div class="matrix-desc">Интуиция, рентген и смыслы</div></div>
             </div>
 
             <div class="hook-box" id="p-hook"></div>
@@ -194,12 +194,10 @@
         }
 
         function updateVisualMatrix(dateStr) {
-            // Сбрасываем все ячейки
             for (let i = 1; i <= 9; i++) {
                 const cell = document.getElementById(`m-cell-${i}`);
                 if (cell) cell.classList.remove('active');
             }
-            // Извлекаем все цифры из даты и подсвечиваем уникальные
             const digits = dateStr.replace(/\D/g, '').split('').map(Number);
             const uniqueDigits = [...new Set(digits)];
             uniqueDigits.forEach(d => {
@@ -208,6 +206,16 @@
                     if (cell) cell.classList.add('active');
                 }
             });
+        }
+
+        function formatRealization(p) {
+            const code = (p.chs && p.chd) ? `${p.chs}${p.chd}` : (p.realization_raw_sum || '');
+            return code ? `${code}→${p.realization}` : (p.realization || '—');
+        }
+
+        function formatItog(p) {
+            const code = (p.chs && p.chd && p.realization) ? `${p.chs}${p.chd}${p.realization}` : '';
+            return code ? `${code}→${p.itog}` : (p.itog || '—');
         }
 
         async function runPreview() {
@@ -223,10 +231,9 @@
                 document.getElementById('p-title').innerText = `${d.raw_date || date} (${d.age || '—'} лет)`;
                 document.getElementById('p-chs').innerText = d.day_raw ? `${d.day_raw}→${d.chs}` : (d.chs || '—');
                 document.getElementById('p-chd').innerText = d.chd_raw_sum ? `${d.chd_raw_sum}→${d.chd}` : (d.chd || '—');
-                document.getElementById('p-real').innerText = d.realization_raw_sum ? `${d.realization_raw_sum}→${d.realization}` : (d.realization || '—');
-                document.getElementById('p-itog').innerText = d.itog || '—';
+                document.getElementById('p-real').innerText = formatRealization(d);
+                document.getElementById('p-itog').innerText = formatItog(d);
                 
-                // Подсвечиваем ячейки матрицы 3х3 по дате
                 updateVisualMatrix(date);
 
                 const hook = d.hook_text || "Базовый анализ завершен. Матрица готова к дешифровке.";
@@ -323,20 +330,22 @@
 
             if (item.report_type === 'single') {
                 const p = item.profile, d = item.report;
+                const realDisplay = formatRealization(p);
+                const itogDisplay = formatItog(p);
                 content.innerHTML = `
-                    <div class="tag">Кибернетическое Досье • ${p.raw_date} (${p.age} лет)</div>
+                    <div class="tag">Personal Matrix • ${p.raw_date} (${p.age} лет)</div>
                     <h2 style="font-family:'Cormorant Garamond',serif;font-size:26px;color:#FFF;margin:4px 0 12px 0;">«${d.archetype_title || 'Анализ завершен'}»</h2>
                     <div class="metrics">
                         <div class="metric-box"><div class="metric-val">${p.day_raw || ''}→${p.chs || ''}</div><div class="metric-lbl">ЧС (Сознание)</div></div>
                         <div class="metric-box"><div class="metric-val">${p.chd_raw_sum || ''}→${p.chd || ''}</div><div class="metric-lbl">ЧД (Действие)</div></div>
-                        <div class="metric-box"><div class="metric-val">${p.realization_raw_sum || ''}→${p.realization || ''}</div><div class="metric-lbl">КР (Реализация)</div></div>
-                        <div class="metric-box"><div class="metric-val">${p.itog || ''}</div><div class="metric-lbl">ИТ (Итог)</div></div>
+                        <div class="metric-box"><div class="metric-val">${realDisplay}</div><div class="metric-lbl">ЧР (Реализация)</div></div>
+                        <div class="metric-box"><div class="metric-val">${itogDisplay}</div><div class="metric-lbl">Итог</div></div>
                     </div>
                     
                     <div class="dossier-card"><div class="dossier-h">🧬 0. Дешифровка исходного кода</div>
-                        <p><b>ЧС (Сознание):</b> ${d.core_chs_decoding || '—'}</p>
-                        <p><b>ЧД (Действие):</b> ${d.core_chd_decoding || '—'}</p>
-                        <p><b>КР (Реализация) и ИТ (Итог):</b> ${d.core_realization_decoding || '—'}</p>
+                        <p><b>Число Сознания (ЧС ${p.day_raw || ''}→${p.chs || ''}):</b> ${d.core_chs_decoding || '—'}</p>
+                        <p><b>Число Действия (ЧД ${p.chd_raw_sum || ''}→${p.chd || ''}):</b> ${d.core_chd_decoding || '—'}</p>
+                        <p><b>Число Реализации (ЧР ${realDisplay}) и Итог (${itogDisplay}):</b> ${d.core_realization_decoding || '—'}</p>
                         <p><b>Возраст:</b> ${d.core_age_summary || '—'}</p>
                     </div>
 
@@ -350,7 +359,7 @@
                         <p><b style="color:var(--gold);">Какой партнер подойдет:</b> ${d.rel_partner || '—'}</p>
                     </div>
 
-                    <div class="dossier-card" style="border-color: #3A3222;">
+                    <div class="dossier-card">
                         <div class="dossier-h">💰 4. Материальное состояние и притяжение денег</div>
                         <p><b style="color:var(--gold-light);">Архитектура денежного канала:</b> ${d.money_channel || '—'}</p>
                         <p><b style="color:#ff8a8a;">Финансовые утечки (что блокирует поток):</b> ${d.money_blocks || '—'}</p>
@@ -382,7 +391,7 @@
                     
                     <div class="dossier-card"><div class="dossier-h">⚔️ 3. Сценарий в конфликте</div><p>${d.conflict_scenario || '—'}</p></div>
                     
-                    <div class="dossier-card" style="border-color: #3A3222;">
+                    <div class="dossier-card">
                         <div class="dossier-h">💰 4. Финансовая синергия и капитал пары</div>
                         <p><b style="color:var(--gold-light);">Формула общего капитала (распределение ролей):</b> ${d.financial_synergy || '—'}</p>
                         <p><b style="color:#ff8a8a;">Финансовые конфликты (где пара сливает деньги):</b> ${d.financial_leaks || '—'}</p>
