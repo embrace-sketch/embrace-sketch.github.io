@@ -263,7 +263,7 @@
             const gender = document.getElementById('s-gender').value;
             
             btn.disabled = true; 
-            btn.innerText = '⏳ Составляю досье (15-30 сек)...';
+            btn.innerText = '⏳ Составляю досье...';
             
             try {
                 const res = await fetch(`${BACKEND_URL}/api/unlock_single`, {
@@ -273,15 +273,12 @@
                 });
                 
                 if (!res.ok) {
-                    alert('Ошибка генерации досье. Попробуйте еще раз.');
-                    btn.disabled = false;
-                    btn.innerText = '🔓 Открыть полное Досье (0 ₽)';
-                    return;
+                    throw new Error('Server error');
                 }
                 
                 renderDossierView(await res.json());
             } catch (e) {
-                alert('Ошибка соединения с сервером.');
+                alert('Не удалось получить ответ. Проверьте соединение.');
                 btn.disabled = false;
                 btn.innerText = '🔓 Открыть полное Досье (0 ₽)';
             }
