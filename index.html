@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cybernetic Matrix Vault v4</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <title>Cybernetic Matrix Vault v5</title>
+    <script type="text/javascript" src="https://gc.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=j-jxJnlju1KU9g2atKi9FLqOw19tnvFOoD0Pp54vUVZw_RHoYuITVnpxazycZxzRoNryv27G_NrzDSfA1QLG7nROVnm00xlYHYwsNg_wpHs2m29LEZnPRyb1361tPgQ4MM-kxpfws_fStmIvl1eEM0_ZOpXJNegJ4KZV42tZ7_g70wxt6KeFTl1ojt0MPSsvLWUQ3ed1QlGmby_ipzrM4Mv6dzHhmT2ddFvlz9QhMrQmExOFjGysp5BY6SirQsbVSXYIySJ1YDrnVvLsp8eWfn-4CDhn99emfZzkjxHmpZoax_vcXRYZxtOPd-xxu9y4" charset="UTF-8"></script><script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -40,16 +40,30 @@
         .btn { width: 100%; background: linear-gradient(135deg, #C5A059 0%, #9A7632 100%); color: #0D0E12; border: none; padding: 14px; border-radius: 8px; font-weight: 600; font-size: 12.5px; text-transform: uppercase; letter-spacing: 1.4px; cursor: pointer; margin-top: 4px; }
         .btn:disabled { opacity: 0.6; cursor: not-allowed; }
         .btn-outline { background: transparent; border: 1px solid var(--gold); color: var(--gold-light); margin-top: 10px; }
-        .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 14px 0; }
-        .metric-box { background: #101217; border: 1px solid var(--border); border-radius: 8px; padding: 10px 4px; text-align: center; }
-        .metric-val { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 700; color: var(--gold); line-height: 1; }
-        .metric-lbl { font-size: 8.5px; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
+        
+        /* Метрики и аббревиатуры */
+        .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin: 14px 0; }
+        .metric-box { background: #101217; border: 1px solid var(--border); border-radius: 8px; padding: 8px 2px; text-align: center; }
+        .metric-val { font-family: 'Cormorant Garamond', serif; font-size: 19px; font-weight: 700; color: var(--gold); line-height: 1.1; }
+        .metric-lbl { font-size: 7.5px; text-transform: uppercase; color: var(--muted); margin-top: 3px; letter-spacing: 0.5px; }
+
+        /* Визуальная матрица 3х3 */
+        .matrix-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 16px 0; }
+        .matrix-cell { background: #101217; border: 1px solid var(--border); border-radius: 8px; padding: 10px 6px; text-align: center; opacity: 0.35; transition: all 0.3s; }
+        .matrix-cell.active { background: #1F1D18; border-color: var(--gold); opacity: 1; box-shadow: 0 0 10px rgba(197, 160, 89, 0.15); }
+        .matrix-num { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 700; color: var(--text); line-height: 1; }
+        .matrix-cell.active .matrix-num { color: var(--gold-light); }
+        .matrix-name { font-size: 9px; text-transform: uppercase; color: var(--muted); margin-top: 3px; font-weight: 600; }
+        .matrix-cell.active .matrix-name { color: var(--gold); }
+        .matrix-desc { font-size: 8px; color: #8E8B82; margin-top: 2px; }
+
         .hook-box { background: #1B1914; border-left: 3px solid var(--gold); padding: 12px 14px; border-radius: 0 8px 8px 0; margin: 12px 0; font-size: 13px; }
         .locked-list { background: #111318; border: 1px dashed #3A3325; border-radius: 8px; padding: 12px 14px; margin: 12px 0; font-size: 12.5px; color: #C7C2B8; }
-        .dossier-section { border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 12px; }
-        .dossier-section:last-child { border-bottom: none; }
-        .finance-box { background: #191712; padding: 14px; border-radius: 10px; border: 1px solid #3A3222; margin-bottom: 14px; }
-        .dossier-h { font-family: 'Cormorant Garamond', serif; font-size: 19px; color: var(--gold-light); margin: 0 0 8px 0; font-weight: 700; text-transform: uppercase; }
+        
+        /* Карточки разделов разбора */
+        .dossier-card { background: #191712; padding: 14px; border-radius: 10px; border: 1px solid #3A3222; margin-bottom: 12px; }
+        .dossier-h { font-family: 'Cormorant Garamond', serif; font-size: 18px; color: var(--gold-light); margin: 0 0 8px 0; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        
         .vault-item { background: var(--card-alt); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
         .vault-item:hover { border-color: var(--gold); }
         #status-log { font-size: 11.5px; color: #ff8a8a; margin-bottom: 12px; display: none; word-break: break-word; background: #261515; border: 1px solid #5a2525; padding: 10px 12px; border-radius: 8px; }
@@ -57,7 +71,7 @@
 </head>
 <body>
     <div class="header">
-        <div class="tag">Cybernetic Matrix • v4.0</div>
+        <div class="tag">Cybernetic Matrix • v5.0</div>
         <h1>Архитектура Личности</h1>
     </div>
 
@@ -84,12 +98,31 @@
         <div id="preview-card" class="card" style="display:none;">
             <div class="tag">Первичный рентген кода</div>
             <h2 id="p-title" style="font-family:'Cormorant Garamond',serif; font-size:24px; margin:4px 0;"></h2>
+            
             <div class="metrics">
-                <div class="metric-box"><div class="metric-val" id="p-chs"></div><div class="metric-lbl">Сознание</div></div>
-                <div class="metric-box"><div class="metric-val" id="p-chd"></div><div class="metric-lbl">Действие</div></div>
-                <div class="metric-box"><div class="metric-val" id="p-real"></div><div class="metric-lbl">Реализация</div></div>
-                <div class="metric-box"><div class="metric-val" id="p-itog"></div><div class="metric-lbl">Итог</div></div>
+                <div class="metric-box"><div class="metric-val" id="p-chs"></div><div class="metric-lbl">ЧС (Сознание)</div></div>
+                <div class="metric-box"><div class="metric-val" id="p-chd"></div><div class="metric-lbl">ЧД (Действие)</div></div>
+                <div class="metric-box"><div class="metric-val" id="p-real"></div><div class="metric-lbl">КР (Реализация)</div></div>
+                <div class="metric-box"><div class="metric-val" id="p-itog"></div><div class="metric-lbl">ИТ (Итог)</div></div>
             </div>
+
+            <!-- Визуальная матрица 3х3 (Левый столбец 1,2,3 | Средний 4,5,6 | Правый 7,8,9) -->
+            <div style="font-size:10px; text-transform:uppercase; color:var(--muted); letter-spacing:1px; margin-top:12px; margin-bottom:4px;">Психоматрица 3×3 (активные энергии):</div>
+            <div class="matrix-grid" id="matrix-visual-grid">
+                <!-- Ряд 3: ячейки 1, 4, 7 -->
+                <div class="matrix-cell" id="m-cell-1"><div class="matrix-num">1</div><div class="matrix-name">Солнце</div><div class="matrix-desc">Лидер</div></div>
+                <div class="matrix-cell" id="m-cell-4"><div class="matrix-num">4</div><div class="matrix-name">Раху</div><div class="matrix-desc">Новатор</div></div>
+                <div class="matrix-cell" id="m-cell-7"><div class="matrix-num">7</div><div class="matrix-name">Кету</div><div class="matrix-desc">Сканер</div></div>
+                <!-- Ряд 2: ячейки 2, 5, 8 -->
+                <div class="matrix-cell" id="m-cell-2"><div class="matrix-num">2</div><div class="matrix-name">Луна</div><div class="matrix-desc">Психолог</div></div>
+                <div class="matrix-cell" id="m-cell-5"><div class="matrix-num">5</div><div class="matrix-name">Меркурий</div><div class="matrix-desc">Скорость</div></div>
+                <div class="matrix-cell" id="m-cell-8"><div class="matrix-num">8</div><div class="matrix-name">Сатурн</div><div class="matrix-desc">Контролер</div></div>
+                <!-- Ряд 1: ячейки 3, 6, 9 -->
+                <div class="matrix-cell" id="m-cell-3"><div class="matrix-num">3</div><div class="matrix-name">Юпитер</div><div class="matrix-desc">Логика</div></div>
+                <div class="matrix-cell" id="m-cell-6"><div class="matrix-num">6</div><div class="matrix-name">Венера</div><div class="matrix-desc">Гедонист</div></div>
+                <div class="matrix-cell" id="m-cell-9"><div class="matrix-num">9</div><div class="matrix-name">Марс</div><div class="matrix-desc">Воин</div></div>
+            </div>
+
             <div class="hook-box" id="p-hook"></div>
             <div class="locked-list">
                 <b style="color:var(--gold-light);">🔒 Скрыто в полном досье:</b><br>
@@ -129,7 +162,6 @@
         const urlParams = new URLSearchParams(window.location.search);
         const userId = tg.initDataUnsafe?.user?.id || urlParams.get('uid') || 1001;
 
-        // Прямой адрес Ngrok-туннеля к локальному FastAPI
         const BACKEND_URL = 'https://stout-flavoring-helpline.ngrok-free.dev';
 
         function showError(msg) {
@@ -161,6 +193,23 @@
             if (tab === 'vault') loadVault();
         }
 
+        function updateVisualMatrix(dateStr) {
+            // Сбрасываем все ячейки
+            for (let i = 1; i <= 9; i++) {
+                const cell = document.getElementById(`m-cell-${i}`);
+                if (cell) cell.classList.remove('active');
+            }
+            // Извлекаем все цифры из даты и подсвечиваем уникальные
+            const digits = dateStr.replace(/\D/g, '').split('').map(Number);
+            const uniqueDigits = [...new Set(digits)];
+            uniqueDigits.forEach(d => {
+                if (d >= 1 && d <= 9) {
+                    const cell = document.getElementById(`m-cell-${d}`);
+                    if (cell) cell.classList.add('active');
+                }
+            });
+        }
+
         async function runPreview() {
             const date = document.getElementById('s-date').value.trim();
             const gender = document.getElementById('s-gender').value;
@@ -177,6 +226,9 @@
                 document.getElementById('p-real').innerText = d.realization_raw_sum ? `${d.realization_raw_sum}→${d.realization}` : (d.realization || '—');
                 document.getElementById('p-itog').innerText = d.itog || '—';
                 
+                // Подсвечиваем ячейки матрицы 3х3 по дате
+                updateVisualMatrix(date);
+
                 const hook = d.hook_text || "Базовый анализ завершен. Матрица готова к дешифровке.";
                 document.getElementById('p-hook').innerHTML = String(hook).replace(/\n/g, '<br>');
 
@@ -275,38 +327,47 @@
                     <div class="tag">Кибернетическое Досье • ${p.raw_date} (${p.age} лет)</div>
                     <h2 style="font-family:'Cormorant Garamond',serif;font-size:26px;color:#FFF;margin:4px 0 12px 0;">«${d.archetype_title || 'Анализ завершен'}»</h2>
                     <div class="metrics">
-                        <div class="metric-box"><div class="metric-val">${p.day_raw || ''}→${p.chs || ''}</div><div class="metric-lbl">ЧС (Ядро)</div></div>
-                        <div class="metric-box"><div class="metric-val">${p.chd_raw_sum || ''}→${p.chd || ''}</div><div class="metric-lbl">ЧД (Вектор)</div></div>
-                        <div class="metric-box"><div class="metric-val">${p.realization_raw_sum || ''}→${p.realization || ''}</div><div class="metric-lbl">Реализация</div></div>
-                        <div class="metric-box"><div class="metric-val">${p.itog || ''}</div><div class="metric-lbl">Итог</div></div>
+                        <div class="metric-box"><div class="metric-val">${p.day_raw || ''}→${p.chs || ''}</div><div class="metric-lbl">ЧС (Сознание)</div></div>
+                        <div class="metric-box"><div class="metric-val">${p.chd_raw_sum || ''}→${p.chd || ''}</div><div class="metric-lbl">ЧД (Действие)</div></div>
+                        <div class="metric-box"><div class="metric-val">${p.realization_raw_sum || ''}→${p.realization || ''}</div><div class="metric-lbl">КР (Реализация)</div></div>
+                        <div class="metric-box"><div class="metric-val">${p.itog || ''}</div><div class="metric-lbl">ИТ (Итог)</div></div>
                     </div>
-                    <div class="dossier-section"><div class="dossier-h">00. Дешифровка исходного кода</div>
-                        <p><b>ЧС:</b> ${d.core_chs_decoding || '—'}</p>
-                        <p><b>ЧД:</b> ${d.core_chd_decoding || '—'}</p>
-                        <p><b>Реализация и Итог:</b> ${d.core_realization_decoding || '—'}</p>
+                    
+                    <div class="dossier-card"><div class="dossier-h">🧬 0. Дешифровка исходного кода</div>
+                        <p><b>ЧС (Сознание):</b> ${d.core_chs_decoding || '—'}</p>
+                        <p><b>ЧД (Действие):</b> ${d.core_chd_decoding || '—'}</p>
+                        <p><b>КР (Реализация) и ИТ (Итог):</b> ${d.core_realization_decoding || '—'}</p>
                         <p><b>Возраст:</b> ${d.core_age_summary || '—'}</p>
                     </div>
-                    <div class="dossier-section"><div class="dossier-h">01. Мыслит и действует</div><p>${String(d.thinking_and_action || '—').replace(/\n/g, '<br><br>')}</p></div>
-                    <div class="dossier-section"><div class="dossier-h">02. Возрастной этап и текущая фаза</div><p>${d.age_phase_analysis || '—'}</p></div>
-                    <div class="dossier-section"><div class="dossier-h">03. Поведение в отношениях</div>
+
+                    <div class="dossier-card"><div class="dossier-h">🧠 1. Мыслит и действует</div><p>${String(d.thinking_and_action || '—').replace(/\n/g, '<br><br>')}</p></div>
+                    
+                    <div class="dossier-card"><div class="dossier-h">⏳ 2. Возрастной этап и текущая фаза</div><p>${d.age_phase_analysis || '—'}</p></div>
+                    
+                    <div class="dossier-card"><div class="dossier-h">💕 3. Поведение в отношениях</div>
                         <p><b style="color:var(--gold);">В чем нуждается (дефицит):</b> ${d.rel_needs || '—'}</p>
                         <p><b style="color:var(--gold);">Чего хочет (запрос):</b> ${d.rel_wants || '—'}</p>
                         <p><b style="color:var(--gold);">Какой партнер подойдет:</b> ${d.rel_partner || '—'}</p>
                     </div>
-                    <div class="finance-box">
-                        <div class="dossier-h">💰 04. Материальное состояние и притяжение денег</div>
+
+                    <div class="dossier-card" style="border-color: #3A3222;">
+                        <div class="dossier-h">💰 4. Материальное состояние и притяжение денег</div>
                         <p><b style="color:var(--gold-light);">Архитектура денежного канала:</b> ${d.money_channel || '—'}</p>
                         <p><b style="color:#ff8a8a;">Финансовые утечки (что блокирует поток):</b> ${d.money_blocks || '—'}</p>
                         <p><b style="color:#7bed9f;">Методы притяжения денег (рычаги роста):</b> ${d.money_attraction || '—'}</p>
                     </div>
-                    <div class="dossier-section"><div class="dossier-h">05. Боится (Триггеры и броня)</div><p>${d.fears_and_armor || '—'}</p></div>
-                    <div class="dossier-section"><div class="dossier-h">06. Как взаимодействовать</div><p>${d.interaction_manual || '—'}</p></div>
-                    <div class="dossier-section"><div class="dossier-h">07. Вектор эволюции</div>
+
+                    <div class="dossier-card"><div class="dossier-h">🛡 5. Боится (Триггеры и броня)</div><p>${d.fears_and_armor || '—'}</p></div>
+                    
+                    <div class="dossier-card"><div class="dossier-h">🕹 6. Как взаимодействовать (Пульт управления)</div><p>${d.interaction_manual || '—'}</p></div>
+                    
+                    <div class="dossier-card"><div class="dossier-h">🚀 7. Вектор эволюции</div>
                         <p><b style="color:var(--gold);">Вектор роста:</b> ${d.growth_vector || '—'}</p>
                         <p><b style="color:var(--gold);">Что закрыть:</b> ${d.growth_drop || '—'}</p>
                         <p><b style="color:var(--gold);">Фокус внимания:</b> ${d.growth_focus || '—'}</p>
                     </div>
-                    <div class="hook-box"><div class="dossier-h">✦ 08. Квантовая Суперсила</div><div>${d.superpower || '—'}</div></div>
+
+                    <div class="hook-box"><div class="dossier-h">✦ 8. Квантовая Суперсила</div><div>${d.superpower || '—'}</div></div>
                 `;
             } else {
                 const p1 = item.profile.p1, p2 = item.profile.p2, d = item.report;
@@ -314,20 +375,26 @@
                     <div class="tag">Синастрия Матриц • ${p1.raw_date} × ${p2.raw_date}</div>
                     <h2 style="font-family:'Cormorant Garamond',serif;font-size:26px;color:#FFF;margin:4px 0 12px 0;">«${d.union_title || 'Анализ совместимости'}»</h2>
                     <div class="hook-box"><b>Синтез ядер:</b> ${d.matrix_collision_summary || '—'}</div>
-                    <div class="dossier-section"><div class="dossier-h">01. Архитектурная химия</div><p>${d.chemistry || '—'}</p></div>
-                    <div class="dossier-section"><div class="dossier-h">02. Слепые зоны и короткие замыкания</div><p>${d.blind_spots || '—'}</p></div>
-                    <div class="dossier-section"><div class="dossier-h">03. Сценарий в конфликте</div><p>${d.conflict_scenario || '—'}</p></div>
-                    <div class="finance-box">
-                        <div class="dossier-h">💰 04. Финансовая синергия и капитал пары</div>
+                    
+                    <div class="dossier-card"><div class="dossier-h">🧬 1. Архитектурная химия</div><p>${d.chemistry || '—'}</p></div>
+                    
+                    <div class="dossier-card"><div class="dossier-h">👁 2. Слепые зоны и короткие замыкания</div><p>${d.blind_spots || '—'}</p></div>
+                    
+                    <div class="dossier-card"><div class="dossier-h">⚔️ 3. Сценарий в конфликте</div><p>${d.conflict_scenario || '—'}</p></div>
+                    
+                    <div class="dossier-card" style="border-color: #3A3222;">
+                        <div class="dossier-h">💰 4. Финансовая синергия и капитал пары</div>
                         <p><b style="color:var(--gold-light);">Формула общего капитала (распределение ролей):</b> ${d.financial_synergy || '—'}</p>
                         <p><b style="color:#ff8a8a;">Финансовые конфликты (где пара сливает деньги):</b> ${d.financial_leaks || '—'}</p>
                         <p><b style="color:#7bed9f;">Рычаг притяжения больших денег в союзе:</b> ${d.wealth_multiplier || '—'}</p>
                     </div>
-                    <div class="dossier-section"><div class="dossier-h">05. Протокол синхронизации</div>
+
+                    <div class="dossier-card"><div class="dossier-h">🕹 5. Протокол синхронизации</div>
                         <p><b style="color:var(--gold);">Для ${p1.raw_date}:</b> ${d.sync_protocol_p1 || '—'}</p>
                         <p><b style="color:var(--gold);">Для ${p2.raw_date}:</b> ${d.sync_protocol_p2 || '—'}</p>
                     </div>
-                    <div class="hook-box"><div class="dossier-h">✦ 06. Суперсила Союза</div><div>${d.union_superpower || '—'}</div></div>
+
+                    <div class="hook-box"><div class="dossier-h">✦ 6. Суперсила Союза</div><div>${d.union_superpower || '—'}</div></div>
                 `;
             }
             window.scrollTo(0, 0);
