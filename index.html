@@ -257,18 +257,66 @@
             document.getElementById('btn-buy-single').innerText = d.already_saved ? '📂 Открыть Досье' : '🔓 Открыть полное Досье (0 ₽)';
         }
 
-        async function unlockSingle() {
+	async function unlockSingle() {
+            const btn = document.getElementById('btn-buy-single');
             const date = document.getElementById('s-date').value.trim();
             const gender = document.getElementById('s-gender').value;
-            const res = await fetch(`${BACKEND_URL}/api/unlock_single`, {method: 'POST', headers: {'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true'}, body: JSON.stringify({user_id: Number(userId), date, gender})});
-            renderDossierView(await res.json());
+            
+            btn.disabled = true; 
+            btn.innerText = '⏳ Составляю досье (15-30 сек)...';
+            
+            try {
+                const res = await fetch(`${BACKEND_URL}/api/unlock_single`, {
+                    method: 'POST', 
+                    headers: {'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true'}, 
+                    body: JSON.stringify({user_id: Number(userId), date, gender})
+                });
+                
+                if (!res.ok) {
+                    alert('Ошибка генерации досье. Попробуйте еще раз.');
+                    btn.disabled = false;
+                    btn.innerText = '🔓 Открыть полное Досье (0 ₽)';
+                    return;
+                }
+                
+                renderDossierView(await res.json());
+            } catch (e) {
+                alert('Ошибка соединения с сервером.');
+                btn.disabled = false;
+                btn.innerText = '🔓 Открыть полное Досье (0 ₽)';
+            }
         }
 
         async function unlockCompat() {
+            const btn = document.getElementById('btn-buy-compat');
             const d1 = document.getElementById('c-d1').value.trim(), g1 = document.getElementById('c-g1').value;
             const d2 = document.getElementById('c-d2').value.trim(), g2 = document.getElementById('c-g2').value;
-            const res = await fetch(`${BACKEND_URL}/api/unlock_compat`, {method: 'POST', headers: {'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true'}, body: JSON.stringify({user_id: Number(userId), d1, g1, d2, g2})});
-            renderDossierView(await res.json());
+            
+            if (!d1 || !d2) { alert('Введите обе даты рождения'); return; }
+
+            btn.disabled = true;
+            btn.innerText = '⏳ Расчет синастрии (15-30 сек)...';
+
+            try {
+                const res = await fetch(`${BACKEND_URL}/api/unlock_compat`, {
+                    method: 'POST', 
+                    headers: {'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true'}, 
+                    body: JSON.stringify({user_id: Number(userId), d1, g1, d2, g2})
+                });
+
+                if (!res.ok) {
+                    alert('Ошибка расчета синастрии. Попробуйте еще раз.');
+                    btn.disabled = false;
+                    btn.innerText = '💞 Рассчитать Синастрию (0 ₽)';
+                    return;
+                }
+
+                renderDossierView(await res.json());
+            } catch (e) {
+                alert('Ошибка соединения с сервером.');
+                btn.disabled = false;
+                btn.innerText = '💞 Рассчитать Синастрию (0 ₽)';
+            }
         }
 
         async function loadVault() {
@@ -303,8 +351,15 @@
                 <div class="dossier-card"><div class="dossier-h">🧠 1. Мыслит и действует</div><p>${d.thinking_and_action}</p></div>
                 <div class="dossier-card"><div class="dossier-h">⏳ 2. Возрастная фаза</div><p>${d.age_phase_analysis}</p></div>
                 <div class="dossier-card"><div class="dossier-h">💕 3. Отношения</div><p><b>Дефицит:</b> ${d.rel_needs}</p><p><b>Запрос:</b> ${d.rel_wants}</p><p><b>Партнер:</b> ${d.rel_partner}</p></div>
-                <div class="dossier-card"><div class="dossier-h">💰 4. Материальное состояние и деньги</div><p><b>Канал:</b> ${d.money_channel}</p><p><b>Утечки:</b> ${d.money_blocks}</p><p><b>Притяжение:</b> ${d.money_attraction}</p></div>
-                <div class="dossier-card"><div class="dossier-h>🛡 5. Броня</div><p>${d.fears_and_armor}</p></div>
+                <div class="dossier-card"><div class="dossier-h">💰 4. Материальное состояние и притяжение денег</div>
+                    <p><b style="color:var(--gold-light);">Архитектура денежного канала:</b> ${d.money_channel || '—'}</p>
+                    <p><b style="color:#ff8a8a;">Финансовые утечки (что блокирует поток):</b> ${d.money_blocks || '—'}</p>
+                    <p><b style="color:#7bed9f;">Методы притяжения денег (рычаги роста):</b> ${d.money_attraction || '—'}</p>
+                </div>
+                <div class="dossier-card">
+                    <div class="dossier-h">🛡 5. Боится (Триггеры и броня)</div>
+                    <p>${d.fears_and_armor || '—'}</p>
+                </div>
                 <div class="dossier-card"><div class="dossier-h">🕹 6. Управление</div><p>${d.interaction_manual}</p></div>
                 <div class="dossier-card"><div class="dossier-h">🚀 7. Эволюция</div><p>${d.growth_vector}</p></div>
                 <div class="hook-box"><div class="dossier-h">✦ 8. Суперсила</div><div>${d.superpower}</div></div>
