@@ -27,6 +27,38 @@
             font-size: 13.5px;
             line-height: 1.55;
         }
+/* Запрет выделения и копирования текста во всем приложении, кроме полей ввода */
+        body {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+        }
+        input, select, textarea {
+            -webkit-user-select: text;
+            user-select: text;
+        }
+        /* Защита при потере фокуса / попытке захвата окна */
+        body.protected-blur #view-dossier,
+        body.protected-blur #preview-card {
+            filter: blur(18px);
+            transition: filter 0.1s ease;
+        }
+        /* Водяной знак с ID пользователя поверх открытого досье */
+        #view-dossier {
+            position: relative;
+            overflow: hidden;
+        }
+        .watermark-overlay {
+            pointer-events: none;
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 10;
+            background-repeat: repeat;
+            opacity: 0.045;
+        }
+
         .header { text-align: center; border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-bottom: 18px; }
         .tag { font-size: 9.5px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); font-weight: 600; }
         h1 { font-family: 'Cormorant Garamond', serif; font-size: 28px; margin: 4px 0 2px 0; font-weight: 700; color: #FFF; }
@@ -109,6 +141,7 @@
             <!-- Визуальная матрица 3х3: снизу вверх левый столбец 1-2-3, средний 4-5-6, правый 7-8-9 -->
             <div style="font-size:10px; text-transform:uppercase; color:var(--muted); letter-spacing:1px; margin-top:12px; margin-bottom:4px;">Психоматрица (активные энергии даты):</div>
             <div class="matrix-grid" id="matrix-visual-grid">
+	    <div id="matrix-lines-box" style="margin: 12px 0;"></div>
                 <!-- Верхний ряд сетки: 3, 6, 9 -->
                 <div class="matrix-cell" id="m-cell-3"><div class="matrix-num">3</div><div class="matrix-name">Юпитер</div><div class="matrix-desc">Системная логика и структура</div></div>
                 <div class="matrix-cell" id="m-cell-6"><div class="matrix-num">6</div><div class="matrix-name">Венера</div><div class="matrix-desc">Комфорт, любовь и магнетизм</div></div>
@@ -235,6 +268,38 @@
                 document.getElementById('p-itog').innerText = formatItog(d);
                 
                 updateVisualMatrix(date);
+
+// Отрисовываем линии матрицы, рассчитанные на уровне Python
+                const linesBox = document.getElementById('matrix-lines-box');
+                if (d.matrix_lines && d.matrix_lines.length) {
+                    const active = d.matrix_lines.filter(l => l.is_active);
+                    const inactive = d.matrix_lines.filter(l => !l.is_active);
+                    
+                    let html = `<div style="font-size:10px; text-transform:uppercase; color:var(--gold); letter-spacing:1px; margin-bottom:6px; font-weight:600;">📐 Линии психоматрицы (Активные и Спящие):</div>`;
+                    
+                    if (active.length) {
+                        active.forEach(l => {
+                            html += `<div style="background:#191712; border:1px solid var(--gold); border-radius:8px; padding:9px 11px; margin-bottom:6px; font-size:12px;">
+                                <b style="color:var(--gold-light);">✦ Линия [${l.code}] — ${l.name} (Активна):</b><br>
+                                <span style="color:#E0DCD3;">${l.desc}</span>
+                            </div>`;
+                        });
+                    } else {
+                        html += `<div style="background:#14161C; border:1px solid var(--border); border-radius:8px; padding:9px 11px; margin-bottom:6px; font-size:12px; color:#C7C2B8;">
+                            <b>⚪️ Нет полностью замкнутых линий (3 из 3):</b> ваша матрица работает через автономные точечные энергии без жестких автоматических шаблонов.
+                        </div>`;
+                    }
+
+                    // Показываем неактивные (спящие) линии компактным списком
+                    html += `<details style="background:#111318; border:1px solid var(--border); border-radius:8px; padding:8px 11px; font-size:11.5px; color:var(--muted); cursor:pointer;">
+                        <summary style="color:#C7C2B8; font-weight:500;">Показать разомкнутые линии — зоны роста (${inactive.length})</summary>
+                        <div style="margin-top:8px; display:flex; flex-direction:column; gap:6px;">
+                            ${inactive.map(l => `<div><b style="color:var(--gold);">• [${l.code}] ${l.name} (${l.count}/3):</b> ${l.desc}</div>`).join('')}
+                        </div>
+                    </details>`;
+                    
+                    linesBox.innerHTML = html;
+                }
 
                 const hook = d.hook_text || "Базовый анализ завершен. Матрица готова к дешифровке.";
                 document.getElementById('p-hook').innerHTML = String(hook).replace(/\n/g, '<br>');
@@ -408,6 +473,33 @@
             }
             window.scrollTo(0, 0);
         }
+// 1. Блокируем контекстное меню (долгое нажатие), копирование и горячие клавиши
+        document.addEventListener('contextmenu', e => {
+            if (e.target.tagName !== 'INPUT') e.preventDefault();
+        });
+        document.addEventListener('copy', e => e.preventDefault());
+        document.addEventListener('cut', e => e.preventDefault());
+        document.addEventListener('keydown', e => {
+            if (
+                e.key === 'PrintScreen' ||
+                ((e.ctrlKey || e.metaKey) && ['c', 'u', 's', 'p'].includes(e.key.toLowerCase()))
+            ) {
+                e.preventDefault();
+                document.body.classList.add('protected-blur');
+                setTimeout(() => document.body.classList.remove('protected-blur'), 2000);
+            }
+        });
+
+        // 2. Размытие досье при сворачивании / переключении экрана
+        window.addEventListener('blur', () => document.body.classList.add('protected-blur'));
+        window.addEventListener('focus', () => document.body.classList.remove('protected-blur'));
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                document.body.classList.add('protected-blur');
+            } else {
+                document.body.classList.remove('protected-blur');
+            }
+        });
     </script>
 </body>
 </html>
