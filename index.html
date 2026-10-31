@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Personal Matrix</title>
-    <script type="text/javascript" src="https://gc.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=4uenWe82rAOLp5xkz0AQzWLDfWt-YCdOpG3Rml8pnJAR6_7Q32q0h0p7ZACPhdlxUYN7e61XsJzoc0W50KHsI2pXRNEQkfYRPqwNp7NS1_11JzUB5pZW0epQaBPeQQTaqLnVQCPjY1hWH2u24fmBE84D15J8klOGrZK3mS_64U5K-mB-Yy1-9qcL3mwOiqru2pQXhLM_MBzVLbCaZU-iyQaJ73k6kdG055_oFi-088xmGiAfC-D5WsuAEEFYVD7q4nD2FNRPBbCTZMo7St8SlLidRdYC2tFbT8bQMeHVRPaOg1XvgDiwpAvIOP2FTqdx" charset="UTF-8"></script><script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -47,7 +47,6 @@
         .metric-val { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 700; color: var(--gold); line-height: 1.1; }
         .metric-lbl { font-size: 7.5px; text-transform: uppercase; color: var(--muted); margin-top: 3px; }
 
-        /* Чистая жесткая сетка матрицы 3х3 */
         .matrix-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 12px 0 16px 0; }
         .matrix-cell { background: #101217; border: 1px solid var(--border); border-radius: 8px; padding: 10px 4px; text-align: center; opacity: 0.35; }
         .matrix-cell.active { background: #1F1D18; border-color: var(--gold); opacity: 1; }
@@ -57,7 +56,6 @@
         .matrix-cell.active .matrix-name { color: var(--gold); }
         .matrix-desc { font-size: 8px; color: #A6A298; margin-top: 2px; line-height: 1.25; }
 
-        /* Блок разбора линий СТРОГО НИЖЕ матрицы */
         .lines-analysis-container { margin-top: 18px; border-top: 1px solid var(--border); padding-top: 14px; }
         .line-card { background: #191712; border: 1px solid #3A3222; border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; }
         .line-title { font-size: 12px; font-weight: 600; color: var(--gold-light); margin-bottom: 3px; }
@@ -70,7 +68,7 @@
         .vault-item { background: var(--card-alt); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
         
         body.protected-blur #view-dossier, body.protected-blur #preview-card { filter: blur(20px); transition: filter 0.1s; }
-        #status-log { font-size: 11.5px; color: #ff8a8a; margin-bottom: 12px; display: none; background: #261515; border: 1px solid #5a2525; padding: 10px; border-radius: 8px; }
+        #status-log { font-size: 12px; color: #ff8a8a; margin-bottom: 14px; display: none; background: #261515; border: 1px solid #5a2525; padding: 12px; border-radius: 8px; text-align: center; font-weight: 500; }
     </style>
 </head>
 <body>
@@ -85,6 +83,7 @@
         <div class="tab-btn" id="tab-vault" onclick="switchTab('vault')">🗄 Мой Сейф</div>
     </div>
 
+    <!-- Блок для вывода ошибок прямо на экране без всплывающих окон -->
     <div id="status-log"></div>
 
     <div id="view-scan">
@@ -107,7 +106,6 @@
                 <div class="metric-box"><div class="metric-val" id="p-itog"></div><div class="metric-lbl">Итог</div></div>
             </div>
 
-            <!-- Изолированная матрица 3х3 (нижний ряд 1-4-7, средний 2-5-8, верхний 3-6-9) -->
             <div style="font-size:10px; text-transform:uppercase; color:var(--muted); letter-spacing:1px; margin-top:12px; margin-bottom:4px;">Психоматрица 3×3 (активные энергии):</div>
             <div class="matrix-grid">
                 <div class="matrix-cell" id="m-cell-3"><div class="matrix-num">3</div><div class="matrix-name">Юпитер</div><div class="matrix-desc">Системная логика</div></div>
@@ -121,7 +119,6 @@
                 <div class="matrix-cell" id="m-cell-7"><div class="matrix-num">7</div><div class="matrix-name">Кету</div><div class="matrix-desc">Интуиция</div></div>
             </div>
 
-            <!-- Блок разбора линий вынесен СТРОГО НИЖЕ матрицы -->
             <div class="lines-analysis-container">
                 <div style="font-size:10px; text-transform:uppercase; color:var(--gold); letter-spacing:1px; margin-bottom:8px; font-weight:600;">📐 Разбор линий психоматрицы:</div>
                 <div id="matrix-lines-box"></div>
@@ -165,12 +162,30 @@
         const userId = tg.initDataUnsafe?.user?.id || 1001;
         const BACKEND_URL = 'https://stout-flavoring-helpline.ngrok-free.dev';
 
+        // Глушим любые возможные попытки браузера вызвать системный алерт
+        window.alert = function(msg) { showStatus(msg); };
+        if (tg) { tg.showAlert = function(msg) { showStatus(msg); }; }
+
+        function showStatus(text) {
+            const box = document.getElementById('status-log');
+            if (!box) return;
+            box.style.display = 'block';
+            box.innerText = text;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function hideStatus() {
+            const box = document.getElementById('status-log');
+            if (box) box.style.display = 'none';
+        }
+
         document.addEventListener('contextmenu', e => { if (e.target.tagName !== 'INPUT') e.preventDefault(); });
         document.addEventListener('copy', e => e.preventDefault());
         window.addEventListener('blur', () => document.body.classList.add('protected-blur'));
         window.addEventListener('focus', () => document.body.classList.remove('protected-blur'));
 
         function switchTab(tab) {
+            hideStatus();
             ['scan', 'compat', 'vault'].forEach(t => {
                 document.getElementById('view-' + t).style.display = (t === tab) ? 'block' : 'none';
                 document.getElementById('tab-' + t).classList.toggle('active', t === tab);
@@ -204,60 +219,67 @@
         }
 
         async function runPreview() {
+            hideStatus();
             const date = document.getElementById('s-date').value.trim();
             const gender = document.getElementById('s-gender').value;
-            const res = await fetch(`${BACKEND_URL}/api/preview?user_id=${userId}&date=${encodeURIComponent(date)}&gender=${encodeURIComponent(gender)}`, {headers: {'ngrok-skip-browser-warning': 'true'}});
-            if (!res.ok) { tg.showAlert('Ошибка даты'); return; }
-            const d = await res.json();
-            
-            document.getElementById('preview-card').style.display = 'block';
-            document.getElementById('p-title').innerText = `${d.raw_date} (${d.age} лет)`;
-            document.getElementById('p-chs').innerText = `${d.day_raw}→${d.chs}`;
-            document.getElementById('p-chd').innerText = `${d.chd_raw_sum}→${d.chd}`;
-            document.getElementById('p-real').innerText = formatRealization(d);
-            document.getElementById('p-itog').innerText = formatItog(d);
-            
-            updateVisualMatrix(date);
+            if (!date) { showStatus('Введите дату рождения'); return; }
 
-	    const linesBox = document.getElementById('matrix-lines-box');
-            if (d.matrix_lines) {
-                const active = d.matrix_lines.filter(l => l.is_active);
-                const inactive = d.matrix_lines.filter(l => !l.is_active);
+            try {
+                const res = await fetch(`${BACKEND_URL}/api/preview?user_id=${userId}&date=${encodeURIComponent(date)}&gender=${encodeURIComponent(gender)}`, {headers: {'ngrok-skip-browser-warning': 'true'}});
+                if (!res.ok) { showStatus('Ошибка в формате даты'); return; }
+                const d = await res.json();
                 
-                let html = '';
-                if (active.length > 0) {
-                    html += `<div style="font-size:10px; text-transform:uppercase; color:var(--gold); letter-spacing:1px; margin-bottom:6px; font-weight:600;">📐 Активные линии матрицы:</div>`;
-                    active.forEach(l => {
+                document.getElementById('preview-card').style.display = 'block';
+                document.getElementById('p-title').innerText = `${d.raw_date} (${d.age} лет)`;
+                document.getElementById('p-chs').innerText = `${d.day_raw}→${d.chs}`;
+                document.getElementById('p-chd').innerText = `${d.chd_raw_sum}→${d.chd}`;
+                document.getElementById('p-real').innerText = formatRealization(d);
+                document.getElementById('p-itog').innerText = formatItog(d);
+                
+                updateVisualMatrix(date);
+
+                const linesBox = document.getElementById('matrix-lines-box');
+                if (d.matrix_lines) {
+                    const active = d.matrix_lines.filter(l => l.is_active);
+                    const inactive = d.matrix_lines.filter(l => !l.is_active);
+                    
+                    let html = '';
+                    if (active.length > 0) {
+                        html += `<div style="font-size:10px; text-transform:uppercase; color:var(--gold); letter-spacing:1px; margin-bottom:6px; font-weight:600;">📐 Активные линии матрицы:</div>`;
+                        active.forEach(l => {
+                            html += `
+                                <div class="line-card">
+                                    <div class="line-title">✦ Линия [${l.code}] — ${l.name} (Активна)</div>
+                                    <div class="line-text">${l.desc}</div>
+                                </div>
+                            `;
+                        });
+                    } else {
+                        html = `<div class="line-text" style="color:var(--muted); margin-bottom:8px;">⚪️ В дате нет полностью замкнутых линий (3 из 3 цифр). Матрица работает через точечные фокусы.</div>`;
+                    }
+
+                    if (inactive.length > 0) {
                         html += `
-                            <div class="line-card">
-                                <div class="line-title">✦ Линия [${l.code}] — ${l.name} (Активна)</div>
-                                <div class="line-text">${l.desc}</div>
-                            </div>
+                            <details style="background:#111318; border:1px solid var(--border); border-radius:8px; padding:9px 12px; font-size:11.5px; color:var(--muted); cursor:pointer; margin-top:10px;">
+                                <summary style="color:#C7C2B8; font-weight:500; outline:none;">Показать разомкнутые линии — зоны роста (${inactive.length})</summary>
+                                <div style="margin-top:10px; display:flex; flex-direction:column; gap:6px; border-top:1px solid var(--border); padding-top:8px;">
+                                    ${inactive.map(l => `<div style="padding-top:4px;"><b style="color:var(--gold);">• [${l.code}] ${l.name} (${l.count}/3):</b> <span style="color:#A6A298;">${l.desc}</span></div>`).join('')}
+                                </div>
+                            </details>
                         `;
-                    });
-                } else {
-                    html = `<div class="line-text" style="color:var(--muted); margin-bottom:8px;">⚪️ В дате нет полностью замкнутых линий (3 из 3 цифр). Матрица работает через точечные фокусы.</div>`;
+                    }
+                    linesBox.innerHTML = html;
                 }
 
-                // Выпадающий список для неактивных линий
-                if (inactive.length > 0) {
-                    html += `
-                        <details style="background:#111318; border:1px solid var(--border); border-radius:8px; padding:9px 12px; font-size:11.5px; color:var(--muted); cursor:pointer; margin-top:10px;">
-                            <summary style="color:#C7C2B8; font-weight:500; outline:none;">Показать разомкнутые линии — зоны роста (${inactive.length})</summary>
-                            <div style="margin-top:10px; display:flex; flex-direction:column; gap:6px; border-top:1px solid var(--border); pt-8px;">
-                                ${inactive.map(l => `<div style="padding-top:4px;"><b style="color:var(--gold);">• [${l.code}] ${l.name} (${l.count}/3):</b> <span style="color:#A6A298;">${l.desc}</span></div>`).join('')}
-                            </div>
-                        </details>
-                    `;
-                }
-                linesBox.innerHTML = html;
+                document.getElementById('p-hook').innerHTML = d.hook_text.replace(/\n/g, '<br>');
+                document.getElementById('btn-buy-single').innerText = d.already_saved ? '📂 Открыть Досье' : '🔓 Открыть полное Досье (0 ₽)';
+            } catch (e) {
+                showStatus('Ошибка соединения с сервером');
             }
-
-            document.getElementById('p-hook').innerHTML = d.hook_text.replace(/\n/g, '<br>');
-            document.getElementById('btn-buy-single').innerText = d.already_saved ? '📂 Открыть Досье' : '🔓 Открыть полное Досье (0 ₽)';
         }
 
-	async function unlockSingle() {
+        async function unlockSingle() {
+            hideStatus();
             const btn = document.getElementById('btn-buy-single');
             const date = document.getElementById('s-date').value.trim();
             const gender = document.getElementById('s-gender').value;
@@ -273,7 +295,7 @@
                 });
                 
                 if (!res.ok) {
-                    tg.showAlert('Ошибка генерации досье. Попробуйте еще раз.');
+                    showStatus('Ошибка генерации досье. Попробуйте еще раз.');
                     btn.disabled = false;
                     btn.innerText = '🔓 Открыть полное Досье (0 ₽)';
                     return;
@@ -281,18 +303,19 @@
                 
                 renderDossierView(await res.json());
             } catch (e) {
-                tg.showAlert('Не удалось получить ответ. Проверьте соединение.');
+                showStatus('Не удалось получить ответ. Проверьте соединение.');
                 btn.disabled = false;
                 btn.innerText = '🔓 Открыть полное Досье (0 ₽)';
             }
         }
 
         async function unlockCompat() {
+            hideStatus();
             const btn = document.getElementById('btn-buy-compat');
             const d1 = document.getElementById('c-d1').value.trim(), g1 = document.getElementById('c-g1').value;
             const d2 = document.getElementById('c-d2').value.trim(), g2 = document.getElementById('c-g2').value;
             
-            if (!d1 || !d2) { tg.showAlert('Введите обе даты рождения'); return; }
+            if (!d1 || !d2) { showStatus('Введите обе даты рождения'); return; }
 
             btn.disabled = true;
             btn.innerText = '⏳ Расчет синастрии (15-30 сек)...';
@@ -305,7 +328,7 @@
                 });
 
                 if (!res.ok) {
-                    tg.showAlert('Ошибка расчета синастрии. Попробуйте еще раз.');
+                    showStatus('Ошибка расчета синастрии. Попробуйте еще раз.');
                     btn.disabled = false;
                     btn.innerText = '💞 Рассчитать Синастрию (0 ₽)';
                     return;
@@ -313,24 +336,29 @@
 
                 renderDossierView(await res.json());
             } catch (e) {
-                tg.showAlert('Ошибка соединения с сервером.');
+                showStatus('Ошибка соединения с сервером.');
                 btn.disabled = false;
                 btn.innerText = '💞 Рассчитать Синастрию (0 ₽)';
             }
         }
 
         async function loadVault() {
-            const res = await fetch(`${BACKEND_URL}/api/vault?user_id=${userId}`, {headers: {'ngrok-skip-browser-warning': 'true'}});
-            const items = await res.json();
-            document.getElementById('vault-list').innerHTML = items.length ? items.map(r => `<div class="vault-item" onclick="openSavedReport(${r.id})"><div><div class="tag">${r.report_type} • ${r.created_at}</div><div style="font-family:'Cormorant Garamond',serif;font-size:18px;color:#FFF;">${r.title}</div><div style="font-size:11px;color:var(--gold-light);">${r.subtitle}</div></div><div>→</div></div>`).join('') : '<div style="text-align:center;color:var(--muted);">Сейф пуст</div>';
+            try {
+                const res = await fetch(`${BACKEND_URL}/api/vault?user_id=${userId}`, {headers: {'ngrok-skip-browser-warning': 'true'}});
+                const items = await res.json();
+                document.getElementById('vault-list').innerHTML = items.length ? items.map(r => `<div class="vault-item" onclick="openSavedReport(${r.id})"><div><div class="tag">${r.report_type} • ${r.created_at}</div><div style="font-family:'Cormorant Garamond',serif;font-size:18px;color:#FFF;">${r.title}</div><div style="font-size:11px;color:var(--gold-light);">${r.subtitle}</div></div><div>→</div></div>`).join('') : '<div style="text-align:center;color:var(--muted);">Сейф пуст</div>';
+            } catch(e) {}
         }
 
         async function openSavedReport(id) {
-            const res = await fetch(`${BACKEND_URL}/api/report/${id}`, {headers: {'ngrok-skip-browser-warning': 'true'}});
-            renderDossierView(await res.json());
+            try {
+                const res = await fetch(`${BACKEND_URL}/api/report/${id}`, {headers: {'ngrok-skip-browser-warning': 'true'}});
+                renderDossierView(await res.json());
+            } catch(e) {}
         }
 
         function renderDossierView(item) {
+            hideStatus();
             ['scan', 'compat', 'vault'].forEach(t => document.getElementById('view-' + t).style.display = 'none');
             const box = document.getElementById('view-dossier');
             box.style.display = 'block';
@@ -370,7 +398,7 @@
                 <div class="dossier-card"><div class="dossier-h">👁 2. Слепые зоны</div><p>${d.blind_spots}</p></div>
                 <div class="dossier-card"><div class="dossier-h">⚔️ 3. Конфликт</div><p>${d.conflict_scenario}</p></div>
                 <div class="dossier-card"><div class="dossier-h">💰 4. Финансы пары</div><p>${d.financial_synergy}</p></div>
-                <div class="dossier-card"><div class="dossier-h">🕹 5. Синхронизация</div><p>${d.sync_protocol_p1}</p></div>
+                <div class="dossier-card"><div class="dossier-h">🕹 5. Синхронизация</div><p><b>Для Первого партнера:</b> ${d.sync_protocol_p1 || '—'}</p><p><b>Для Второго партнера:</b> ${d.sync_protocol_p2 || '—'}</p></div>
                 <div class="hook-box"><div class="dossier-h">✦ 6. Суперсила союза</div><div>${d.union_superpower}</div></div>
             `;
             window.scrollTo(0, 0);
