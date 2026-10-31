@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Personal Matrix</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script type="text/javascript" src="https://gc.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=4uenWe82rAOLp5xkz0AQzWLDfWt-YCdOpG3Rml8pnJAR6_7Q32q0h0p7ZACPhdlxUYN7e61XsJzoc0W50KHsI2pXRNEQkfYRPqwNp7NS1_11JzUB5pZW0epQaBPeQQTaqLnVQCPjY1hWH2u24fmBE84D15J8klOGrZK3mS_64U5K-mB-Yy1-9qcL3mwOiqru2pQXhLM_MBzVLbCaZU-iyQaJ73k6kdG055_oFi-088xmGiAfC-D5WsuAEEFYVD7q4nD2FNRPBbCTZMo7St8SlLidRdYC2tFbT8bQMeHVRPaOg1XvgDiwpAvIOP2FTqdx" charset="UTF-8"></script><script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -93,7 +93,7 @@
             <select id="s-gender"><option value="М">Мужчина</option><option value="Ж">Женщина</option></select>
             <label>Дата рождения (ДД.ММ.ГГГГ)</label>
             <input type="text" id="s-date" placeholder="12.05.1984">
-            <button class="btn" onclick="runPreview()">Сканировать матрицу</button>
+            <button type="button" class="btn" onclick="runPreview()">Сканировать матрицу</button>
         </div>
 
         <div id="preview-card" class="card" style="display:none;">
@@ -134,19 +134,19 @@
                 • Скрытый дефицит в отношениях и кто вам подойдет<br>
                 • Защитный панцирь в стрессе и Суперсила
             </div>
-            <button class="btn" id="btn-buy-single" onclick="unlockSingle()">🔓 Открыть полное Досье (0 ₽)</button>
+            <button type="button" class="btn" id="btn-buy-single" onclick="unlockSingle()">🔓 Открыть полное Досье (0 ₽)</button>
         </div>
     </div>
 
     <div id="view-compat" style="display:none;">
         <div class="card">
-            <label>Объект 1: Пол и Дата рождения</label>
+            <label>Первый партнер: Пол и Дата рождения</label>
             <select id="c-g1"><option value="М">Мужчина</option><option value="Ж">Женщина</option></select>
             <input type="text" id="c-d1" placeholder="12.05.1984">
-            <label>Объект 2 (Партнер): Пол и Дата рождения</label>
+            <label>Второй партнер: Пол и Дата рождения</label>
             <select id="c-g2"><option value="Ж">Женщина</option><option value="М">Мужчина</option></select>
             <input type="text" id="c-d2" placeholder="26.05.1989">
-            <button class="btn" id="btn-buy-compat" onclick="unlockCompat()">💞 Рассчитать Синастрию (0 ₽)</button>
+            <button type="button" class="btn" id="btn-buy-compat" onclick="unlockCompat()">💞 Рассчитать Синастрию (0 ₽)</button>
         </div>
     </div>
 
@@ -156,7 +156,7 @@
 
     <div id="view-dossier" class="card" style="display:none;">
         <div id="dossier-content"></div>
-        <button class="btn btn-outline" onclick="switchTab('vault')">← В Сейф</button>
+        <button type="button" class="btn btn-outline" onclick="switchTab('vault')">← В Сейф</button>
     </div>
 
     <script>
@@ -207,7 +207,7 @@
             const date = document.getElementById('s-date').value.trim();
             const gender = document.getElementById('s-gender').value;
             const res = await fetch(`${BACKEND_URL}/api/preview?user_id=${userId}&date=${encodeURIComponent(date)}&gender=${encodeURIComponent(gender)}`, {headers: {'ngrok-skip-browser-warning': 'true'}});
-            if (!res.ok) { alert('Ошибка даты'); return; }
+            if (!res.ok) { tg.showAlert('Ошибка даты'); return; }
             const d = await res.json();
             
             document.getElementById('preview-card').style.display = 'block';
@@ -273,12 +273,15 @@
                 });
                 
                 if (!res.ok) {
-                    throw new Error('Server error');
+                    tg.showAlert('Ошибка генерации досье. Попробуйте еще раз.');
+                    btn.disabled = false;
+                    btn.innerText = '🔓 Открыть полное Досье (0 ₽)';
+                    return;
                 }
                 
                 renderDossierView(await res.json());
             } catch (e) {
-                alert('Не удалось получить ответ. Проверьте соединение.');
+                tg.showAlert('Не удалось получить ответ. Проверьте соединение.');
                 btn.disabled = false;
                 btn.innerText = '🔓 Открыть полное Досье (0 ₽)';
             }
@@ -289,7 +292,7 @@
             const d1 = document.getElementById('c-d1').value.trim(), g1 = document.getElementById('c-g1').value;
             const d2 = document.getElementById('c-d2').value.trim(), g2 = document.getElementById('c-g2').value;
             
-            if (!d1 || !d2) { alert('Введите обе даты рождения'); return; }
+            if (!d1 || !d2) { tg.showAlert('Введите обе даты рождения'); return; }
 
             btn.disabled = true;
             btn.innerText = '⏳ Расчет синастрии (15-30 сек)...';
@@ -302,7 +305,7 @@
                 });
 
                 if (!res.ok) {
-                    alert('Ошибка расчета синастрии. Попробуйте еще раз.');
+                    tg.showAlert('Ошибка расчета синастрии. Попробуйте еще раз.');
                     btn.disabled = false;
                     btn.innerText = '💞 Рассчитать Синастрию (0 ₽)';
                     return;
@@ -310,7 +313,7 @@
 
                 renderDossierView(await res.json());
             } catch (e) {
-                alert('Ошибка соединения с сервером.');
+                tg.showAlert('Ошибка соединения с сервером.');
                 btn.disabled = false;
                 btn.innerText = '💞 Рассчитать Синастрию (0 ₽)';
             }
